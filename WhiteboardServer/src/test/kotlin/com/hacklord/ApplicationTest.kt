@@ -1,6 +1,6 @@
-package com.example
+package com.hacklord
 
-import com.example.plugins.*
+import com.hacklord.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*

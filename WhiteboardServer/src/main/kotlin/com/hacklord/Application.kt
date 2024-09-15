@@ -1,6 +1,6 @@
-package com.example
+package com.hacklord
 
-import com.example.plugins.*
+import com.hacklord.plugins.*
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {

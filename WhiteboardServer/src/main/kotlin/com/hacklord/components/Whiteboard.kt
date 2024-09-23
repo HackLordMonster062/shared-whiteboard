@@ -6,4 +6,5 @@ data class Whiteboard(
     val creator: User,
     val users: List<User> = listOf(),
     val lines: List<Line> = listOf(),
+    val currLineId: Long = 0,
 )

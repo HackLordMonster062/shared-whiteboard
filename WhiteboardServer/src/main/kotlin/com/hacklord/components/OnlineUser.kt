@@ -2,5 +2,5 @@ package com.hacklord.components
 
 data class OnlineUser(
     val user: User,
-    val currBoard: Int,
+    val currBoard: Long,
 )

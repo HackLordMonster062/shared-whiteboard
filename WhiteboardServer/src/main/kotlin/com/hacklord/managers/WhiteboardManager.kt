@@ -10,12 +10,20 @@ class WhiteboardManager(
     private val info: Whiteboard,
 ) {
     private val connectedUsers: MutableList<OnlineUser> = mutableListOf()
+
+    private val whitelist = info.whitelist.toMutableSet()
     private val lines = info.lines.toMutableList()
 
     private var currId = info.currLineId
 
+    private fun isUserConnected(userId: Long): Boolean {
+        return connectedUsers.any {user ->
+            user.user.id == userId
+        }
+    }
+
     fun connectUser(user: User): OnlineUser? {
-        if (!info.users.contains(user)) {
+        if (!whitelist.contains(user.id) || isUserConnected(user.id)) {
             return null
         }
 
@@ -27,6 +35,20 @@ class WhiteboardManager(
         connectedUsers.add(onlineUser)
 
         return onlineUser
+    }
+
+    fun disconnectUser(userId: Long): Boolean {
+        return connectedUsers.removeIf {onlineUser ->
+            onlineUser.user.id == userId
+        }
+    }
+
+    fun addUser(userId: Long) {
+        whitelist.add(userId)
+    }
+
+    fun removeUser(userId: Long) {
+        whitelist.remove(userId)
     }
 
     fun drawLine(line: Line): Long? {
@@ -61,7 +83,7 @@ class WhiteboardManager(
         return info.copy(
             lines = lines,
             currLineId = currId,
-            // TODO: add new user list (add/remove users' access)
+            whitelist = whitelist
         )
     }
 }

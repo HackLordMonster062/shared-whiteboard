@@ -7,11 +7,11 @@ import com.hacklord.components.Whiteboard
 import com.hacklord.settings.ValidValues
 
 class WhiteboardManager(
-    private val info: Whiteboard,
+    val info: Whiteboard,
 ) {
     private val connectedUsers: MutableList<OnlineUser> = mutableListOf()
 
-    private val whitelist = info.whitelist.toMutableSet()
+    private val whitelist = info.userWhitelist.toMutableSet()
     private val lines = info.lines.toMutableList()
 
     private var currId = info.currLineId
@@ -83,7 +83,7 @@ class WhiteboardManager(
         return info.copy(
             lines = lines,
             currLineId = currId,
-            whitelist = whitelist
+            userWhitelist = whitelist
         )
     }
 }

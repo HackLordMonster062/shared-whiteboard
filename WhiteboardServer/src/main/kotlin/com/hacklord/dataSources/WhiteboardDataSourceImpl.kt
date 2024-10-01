@@ -14,7 +14,7 @@ class WhiteboardDataSourceImpl : WhiteboardDataSource {
         boards.remove(id)
     }
 
-    override fun editWhiteboard(boardData: Whiteboard): Boolean {
+    override fun updateWhiteboard(boardData: Whiteboard): Boolean {
         if (!boards.containsKey(boardData.id)) return false
 
         boards[boardData.id] = boardData

@@ -11,7 +11,7 @@ class WhiteboardManager(
 ) {
     private val connectedUsers: MutableList<OnlineUser> = mutableListOf()
 
-    private val whitelist = info.userWhitelist.toMutableSet()
+    val whitelist = info.userWhitelist.toMutableSet()
     private val lines = info.lines.toMutableList()
 
     private var currId = info.currLineId
@@ -22,19 +22,8 @@ class WhiteboardManager(
         }
     }
 
-    fun connectUser(user: User): OnlineUser? {
-        if (!whitelist.contains(user.id) || isUserConnected(user.id)) {
-            return null
-        }
-
-        val onlineUser = OnlineUser(
-            user,
-            info.id
-        )
-
-        connectedUsers.add(onlineUser)
-
-        return onlineUser
+    fun connectUser(user: OnlineUser) {
+        connectedUsers.add(user)
     }
 
     fun disconnectUser(userId: Long): Boolean {

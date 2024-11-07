@@ -30,7 +30,7 @@ import kotlin.math.sqrt
 @Preview
 fun App() {
     MaterialTheme {
-        MainCanvas()
+        //MainCanvas()
     }
 }
 

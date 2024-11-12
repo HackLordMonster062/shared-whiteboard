@@ -2,6 +2,7 @@
 val kotlin_version: String by project
 val logback_version: String by project
 val kmongo_version: String by project
+val koin_version: String by project
 
 plugins {
     kotlin("jvm") version "2.0.20"
@@ -27,6 +28,10 @@ dependencies {
     implementation("org.litote.kmongo:kmongo:$kmongo_version")
     implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
     implementation("org.litote.kmongo:kmongo-coroutine-serialization:$kmongo_version")
+
+    implementation("io.insert-koin:koin-core:$koin_version")
+    implementation("io.insert-koin:koin-ktor:$koin_version")
+    implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
 
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-websockets-jvm")

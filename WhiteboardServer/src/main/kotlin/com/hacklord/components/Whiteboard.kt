@@ -7,7 +7,7 @@ import org.bson.types.ObjectId
 data class Whiteboard(
     val name: String,
     val creator: User,
-    val userWhitelist: Set<Long> = setOf(),
+    val userWhitelist: Set<String> = setOf(),
     val lines: List<Line> = listOf(),
     val currLineId: Long = 0,
     val id: String = ObjectId().toString(),

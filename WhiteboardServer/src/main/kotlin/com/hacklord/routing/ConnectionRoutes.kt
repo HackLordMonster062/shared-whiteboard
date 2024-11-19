@@ -2,6 +2,8 @@ package com.hacklord.routing
 
 import com.hacklord.components.OnlineUserState
 import com.hacklord.interfaces.UserDataSource
+import com.hacklord.interfaces.WhiteboardDataSource
+import com.hacklord.managers.OnlineBoardsManager
 import com.hacklord.managers.UserManager
 import io.ktor.http.*
 import io.ktor.server.auth.*
@@ -17,7 +19,8 @@ import org.bson.types.ObjectId
 
 fun Route.connection(
     userDataSource: UserDataSource,
-    userManager: UserManager
+    whiteboardDataSource: WhiteboardDataSource,
+    onlineBoardsManager: OnlineBoardsManager
 ) {
     authenticate {
         webSocket("/connect") {
@@ -31,47 +34,93 @@ fun Route.connection(
                 return@webSocket
             }
 
-            var onlineUser = userManager.connectUser(user, this)
+            var onlineUser = UserManager.connectUser(user, this)
 
             incoming.consumeEach {
                 if (it is Frame.Text) {
                     when (onlineUser.state) {
                         is OnlineUserState.InLobby -> {
-                            val request = Json.decodeFromString<LobbyRequest>(it.readText())
+                            val response: LobbyResponse
 
-                            when (request) {
+                            when (val request = Json.decodeFromString<LobbyRequest>(it.readText())) {
                                 is LobbyRequest.GetWhiteboards -> {
+                                    val boards = whiteboardDataSource.getAllWhiteboards()
 
+                                    response = LobbyResponse.BoardList(boards = boards)
                                 }
                                 is LobbyRequest.EnterWhiteboard -> {
-                                    onlineUser = userManager.changeState(
+                                    onlineUser = UserManager.changeState(
                                         onlineUser,
                                         OnlineUserState.InWhiteboard(request.boardID)
                                     )
+
+                                    response = if (onlineBoardsManager.connectUser(onlineUser, request.boardID)) {
+                                        LobbyResponse.EnterBoard(
+                                            boardInfo = onlineBoardsManager.onlineBoards[request.boardID]!!.info
+                                        )
+                                    } else {
+                                        LobbyResponse.Error(
+                                            message = "Cannot enter board."
+                                        )
+                                    }
+                                }
+                                is LobbyRequest.CreateWhiteboard -> {
+                                    val boardID = onlineBoardsManager.createWhiteboard(
+                                        name = request.name,
+                                        owner = onlineUser.user
+                                    )
+
+                                    onlineBoardsManager.connectUser(
+                                        user = onlineUser,
+                                        boardID = boardID
+                                    )
+
+                                    response = LobbyResponse.EnterBoard(
+                                        boardInfo = onlineBoardsManager.onlineBoards[boardID]!!.info
+                                    )
+                                }
+                                is LobbyRequest.DeleteWhiteboard -> {
+                                    if (onlineBoardsManager.onlineBoards.keys.contains(request.boardID))
+                                        onlineBoardsManager.closeWhiteboard(request.boardID)
+
+                                    whiteboardDataSource.deleteWhiteboard(ObjectId(request.boardID))
+
+                                    response = LobbyResponse.DeleteBoard()
                                 }
                             }
+
+                            send(Frame.Text(
+                                Json.encodeToString(response)
+                            ))
                         }
                         is OnlineUserState.InWhiteboard -> {
                             val request = Json.decodeFromString<WhiteboardRequest>(it.readText())
 
-                            val response = when (request) {
+                            val userState = onlineUser.state as OnlineUserState.InWhiteboard
+                            val manager = onlineBoardsManager.onlineBoards[userState.boardId]!!
+
+                            when (request) {
                                 is WhiteboardRequest.DrawLine -> {
-                                    Response.DrawBroadcast(
-                                        line = request.line
+                                    manager.broadcast(
+                                        onlineUser.user.id,
+                                        WhiteboardResponse.DrawBroadcast(
+                                            line = request.line
+                                        )
                                     )
                                 }
 
                                 is WhiteboardRequest.EraseLine -> {
-                                    Response.EraseBroadcast(
-                                        lineID = request.lineId
+                                    manager.broadcast(
+                                        onlineUser.user.id,
+                                        WhiteboardResponse.EraseBroadcast(
+                                            lineID = request.lineId
+                                        )
                                     )
                                 }
-                            }
 
-                            userManager.onlineUsers.values.forEach { user ->
-                                if (user.session != this) {
-                                    user.session.send(Frame.Text(
-                                        Json.encodeToString(response)
+                                is WhiteboardRequest.ExitBoard -> {
+                                    send(Frame.Text(
+                                        Json.encodeToString(WhiteboardResponse.ExitBoard())
                                     ))
                                 }
                             }

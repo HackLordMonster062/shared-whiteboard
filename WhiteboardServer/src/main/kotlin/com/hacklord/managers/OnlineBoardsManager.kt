@@ -4,46 +4,44 @@ import com.hacklord.components.OnlineUser
 import com.hacklord.components.User
 import com.hacklord.components.Whiteboard
 import com.hacklord.dataSources.WhiteboardDataSourceImpl
-import com.hacklord.interfaces.WhiteboardDataSource
 import com.hacklord.managers.UserManager.onlineUsers
-import io.ktor.websocket.*
 import org.bson.types.ObjectId
 import org.litote.kmongo.coroutine.CoroutineDatabase
-import java.util.concurrent.ConcurrentHashMap
 
 class OnlineBoardsManager(
     database: CoroutineDatabase
 ) {
-    private val onlineBoards: HashMap<Long, WhiteboardManager> = hashMapOf()
+    val onlineBoards: HashMap<String, WhiteboardManager> = hashMapOf()
     private val boardsDataSource = WhiteboardDataSourceImpl(database)
 
-    private var currBoardId: Long = 0
-
-    suspend fun openWhiteboard(boardId: Long) {
-        val board = boardsDataSource.getWhiteboardById(ObjectId(boardId.toString()))
+    suspend fun openWhiteboard(boardId: String): WhiteboardManager {
+        val board = boardsDataSource.getWhiteboardById(ObjectId(boardId))
 
         board ?: throw Exception("Invalid whiteboard ID")
 
-        val manager = WhiteboardManager(
-            board
-        )
+        val manager = WhiteboardManager(board)
 
         onlineBoards[manager.info.id] = manager
+
+        return manager
     }
 
-    fun createWhiteboard(name: String, owner: User) {
-        boardsDataSource.createBoard(
-            Whiteboard(
-                ++currBoardId,
-                name,
-                owner,
-            )
+    suspend fun createWhiteboard(name: String, owner: User): String {
+        val newBoard = Whiteboard(
+            name = name,
+            creator = owner,
         )
 
-        openWhiteboard(currBoardId)
+        val id = boardsDataSource.insertWhiteboard(newBoard)?.toString()
+
+        id ?: throw Exception("Internal error in database.")
+
+        openWhiteboard(id)
+
+        return id
     }
 
-    fun closeWhiteboard(boardID: Long) {
+    suspend fun closeWhiteboard(boardID: String) {
         val manager = onlineBoards[boardID]
 
         manager ?: throw Exception("Invalid whiteboard ID")
@@ -53,19 +51,11 @@ class OnlineBoardsManager(
         boardsDataSource.updateWhiteboard(board)
     }
 
-    fun connectUser(user: User, boardID: Long, session: WebSocketSession): Boolean {
-        val board = onlineBoards[boardID]
+    suspend fun connectUser(user: OnlineUser, boardID: String): Boolean {
+        val board = onlineBoards[boardID] ?: openWhiteboard(boardID)
 
-        board ?: return false
-
-        if (board.whitelist.contains(user.id)) {
-            onlineUsers[user.id] = OnlineUser(
-                user = user,
-                currBoard = boardID,
-                session = session
-            )
-
-            board.connectUser(onlineUsers[user.id]!!)
+        if (board.info.creator.name == user.user.name || board.whitelist.contains(user.user.id)) {
+            board.connectUser(onlineUsers[user.user.id]!!)
 
             return true
         }

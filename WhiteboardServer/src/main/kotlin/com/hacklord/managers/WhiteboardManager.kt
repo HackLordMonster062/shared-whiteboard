@@ -2,9 +2,12 @@ package com.hacklord.managers
 
 import com.hacklord.components.Line
 import com.hacklord.components.OnlineUser
-import com.hacklord.components.User
 import com.hacklord.components.Whiteboard
+import com.hacklord.routing.WhiteboardResponse
 import com.hacklord.settings.ValidValues
+import io.ktor.websocket.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class WhiteboardManager(
     val info: Whiteboard,
@@ -16,7 +19,7 @@ class WhiteboardManager(
 
     private var currId = info.currLineId
 
-    private fun isUserConnected(userId: Long): Boolean {
+    private fun isUserConnected(userId: String): Boolean {
         return connectedUsers.any {user ->
             user.user.id == userId
         }
@@ -26,17 +29,30 @@ class WhiteboardManager(
         connectedUsers.add(user)
     }
 
-    fun disconnectUser(userId: Long): Boolean {
+    fun disconnectUser(userId: String): Boolean {
         return connectedUsers.removeIf {onlineUser ->
             onlineUser.user.id == userId
         }
     }
 
-    fun addUser(userId: Long) {
+    suspend fun broadcast(sender: String, response: WhiteboardResponse) {
+        if (connectedUsers.any { it.user.id == sender }) {
+            connectedUsers.forEach { user ->
+                if (user.user.id != sender) {
+                    user.session.send(
+                        Frame.Text(
+                        Json.encodeToString(response)
+                    ))
+                }
+            }
+        }
+    }
+
+    fun addUser(userId: String) {
         whitelist.add(userId)
     }
 
-    fun removeUser(userId: Long) {
+    fun removeUser(userId: String) {
         whitelist.remove(userId)
     }
 

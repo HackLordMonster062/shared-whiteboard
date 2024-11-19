@@ -4,18 +4,29 @@ import com.hacklord.components.Line
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Response {
+sealed interface WhiteboardResponse {
     val code: Int
 
     @Serializable
     data class DrawBroadcast(
         override val code: Int = 200,
         val line: Line
-    ) : Response
+    ) : WhiteboardResponse
 
     @Serializable
     data class EraseBroadcast(
         override val code: Int = 201,
         val lineID: Long
-    ) : Response
+    ) : WhiteboardResponse
+
+    @Serializable
+    data class ExitBoard(
+        override val code: Int = 202
+    ) : WhiteboardResponse
+
+    @Serializable
+    data class Error(
+        override val code: Int = -1,
+        val message: String
+    ) : WhiteboardResponse
 }

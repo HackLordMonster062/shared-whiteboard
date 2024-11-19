@@ -7,12 +7,17 @@ import com.hacklord.authentication.signup
 import com.hacklord.components.auth.JwtTokenService
 import com.hacklord.config.TokenConfig
 import com.hacklord.interfaces.UserDataSource
+import com.hacklord.interfaces.WhiteboardDataSource
+import com.hacklord.managers.OnlineBoardsManager
+import com.hacklord.routing.connection
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.get
 
 fun Application.configureRouting(
     userDataSource: UserDataSource = get<UserDataSource>(),
+    whiteboardDataSource: WhiteboardDataSource = get<WhiteboardDataSource>(),
+    onlineBoardsManager: OnlineBoardsManager = get<OnlineBoardsManager>(),
     tokenService: JwtTokenService = get<JwtTokenService>(),
     tokenConfig: TokenConfig = get<TokenConfig>()
 ) {
@@ -29,5 +34,10 @@ fun Application.configureRouting(
 
         authenticate()
         getSecretInfo()
+        connection(
+            userDataSource,
+            whiteboardDataSource,
+            onlineBoardsManager
+        )
     }
 }

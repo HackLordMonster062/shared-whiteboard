@@ -31,4 +31,8 @@ class WhiteboardDataSourceImpl(
     override suspend fun updateWhiteboard(board: Whiteboard): Boolean {
         return boards.updateOneById(board.id, board).wasAcknowledged()
     }
+
+    override suspend fun deleteWhiteboard(id: ObjectId): Boolean {
+        return boards.deleteOneById(id).wasAcknowledged()
+    }
 }

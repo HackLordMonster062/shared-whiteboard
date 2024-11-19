@@ -9,4 +9,5 @@ interface WhiteboardDataSource {
     suspend fun getAllWhiteboards(): List<Whiteboard>
     suspend fun insertWhiteboard(board: Whiteboard): ObjectId?
     suspend fun updateWhiteboard(board: Whiteboard): Boolean
+    suspend fun deleteWhiteboard(id: ObjectId): Boolean
 }

@@ -9,13 +9,18 @@ sealed interface WhiteboardRequest {
 
     @Serializable
     data class DrawLine(
-        override val code: Int = 100,
+        override val code: Int = 200,
         val line: Line
     ): WhiteboardRequest
 
     @Serializable
     data class EraseLine(
-        override val code: Int = 101,
+        override val code: Int = 201,
         val lineId: Long
+    ) : WhiteboardRequest
+
+    @Serializable
+    data class ExitBoard(
+        override val code: Int = 203
     ) : WhiteboardRequest
 }

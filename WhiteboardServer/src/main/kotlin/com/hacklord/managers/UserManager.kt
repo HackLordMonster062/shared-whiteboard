@@ -7,7 +7,7 @@ import io.ktor.websocket.*
 import java.util.concurrent.ConcurrentHashMap
 
 object UserManager {
-    val onlineUsers = ConcurrentHashMap<Long, OnlineUser>()
+    val onlineUsers = ConcurrentHashMap<String, OnlineUser>()
 
     fun connectUser(user: User, session: WebSocketSession): OnlineUser {
         val onlineUser = OnlineUser(
@@ -16,6 +16,18 @@ object UserManager {
             session
         )
 
+        onlineUsers[user.id] = onlineUser
+
         return onlineUser
+    }
+
+    fun changeState(user: OnlineUser, newState: OnlineUserState): OnlineUser {
+        val newUser = user.copy(
+            state = newState
+        )
+
+        onlineUsers[user.user.id] = newUser
+
+        return newUser
     }
 }

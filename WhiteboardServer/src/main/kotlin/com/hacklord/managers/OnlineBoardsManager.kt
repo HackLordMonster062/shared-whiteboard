@@ -4,21 +4,23 @@ import com.hacklord.components.OnlineUser
 import com.hacklord.components.User
 import com.hacklord.components.Whiteboard
 import com.hacklord.dataSources.WhiteboardDataSourceImpl
+import com.hacklord.interfaces.WhiteboardDataSource
+import com.hacklord.managers.UserManager.onlineUsers
 import io.ktor.websocket.*
+import org.bson.types.ObjectId
+import org.litote.kmongo.coroutine.CoroutineDatabase
 import java.util.concurrent.ConcurrentHashMap
 
-class OnlineBoardsManager {
+class OnlineBoardsManager(
+    database: CoroutineDatabase
+) {
     private val onlineBoards: HashMap<Long, WhiteboardManager> = hashMapOf()
-    private val boardsDataSource = WhiteboardDataSourceImpl()
+    private val boardsDataSource = WhiteboardDataSourceImpl(database)
 
     private var currBoardId: Long = 0
 
-    companion object {
-        val onlineUsers = ConcurrentHashMap<Long, OnlineUser>()
-    }
-
-    fun openWhiteboard(boardId: Long) {
-        val board = boardsDataSource.getWhiteboardById(boardId)
+    suspend fun openWhiteboard(boardId: Long) {
+        val board = boardsDataSource.getWhiteboardById(ObjectId(boardId.toString()))
 
         board ?: throw Exception("Invalid whiteboard ID")
 

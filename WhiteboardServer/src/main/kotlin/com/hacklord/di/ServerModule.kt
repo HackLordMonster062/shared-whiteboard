@@ -1,5 +1,6 @@
 package com.hacklord.di
 
+import com.hacklord.components.auth.JwtTokenService
 import com.hacklord.dataSources.UserDataSourceImpl
 import com.hacklord.dataSources.WhiteboardDataSourceImpl
 import com.hacklord.interfaces.UserDataSource
@@ -23,5 +24,8 @@ val serverModule = module {
         WhiteboardDataSourceImpl(
             get()
         )
+    }
+    single {
+        JwtTokenService()
     }
 }

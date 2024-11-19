@@ -4,6 +4,6 @@ import io.ktor.websocket.*
 
 data class OnlineUser(
     val user: User,
-    val currBoard: Long,
+    val state: OnlineUserState,
     val session: WebSocketSession
 )

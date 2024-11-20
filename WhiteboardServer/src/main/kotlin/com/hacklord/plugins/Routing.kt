@@ -1,5 +1,6 @@
 package com.hacklord.plugins
 
+import com.auth0.jwt.JWTVerifier
 import com.hacklord.authentication.authenticate
 import com.hacklord.authentication.getSecretInfo
 import com.hacklord.authentication.login
@@ -19,7 +20,8 @@ fun Application.configureRouting(
     whiteboardDataSource: WhiteboardDataSource = get<WhiteboardDataSource>(),
     onlineBoardsManager: OnlineBoardsManager = get<OnlineBoardsManager>(),
     tokenService: JwtTokenService = get<JwtTokenService>(),
-    tokenConfig: TokenConfig = get<TokenConfig>()
+    tokenConfig: TokenConfig = get<TokenConfig>(),
+    jwtVerifier: JWTVerifier = get<JWTVerifier>()
 ) {
     routing {
         login(
@@ -37,7 +39,8 @@ fun Application.configureRouting(
         connection(
             userDataSource,
             whiteboardDataSource,
-            onlineBoardsManager
+            onlineBoardsManager,
+            jwtVerifier
         )
     }
 }

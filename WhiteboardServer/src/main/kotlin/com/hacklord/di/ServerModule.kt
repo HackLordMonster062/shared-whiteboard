@@ -1,5 +1,7 @@
 package com.hacklord.di
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import com.hacklord.components.auth.JwtTokenService
 import com.hacklord.config.TokenConfig
 import com.hacklord.dataSources.UserDataSourceImpl
@@ -13,7 +15,7 @@ import org.litote.kmongo.reactivestreams.KMongo
 
 val serverModule = module {
     val db = KMongo.createClient(
-        connectionString = "mongodb://localhost:27017"
+        connectionString = "mongodb+srv://hackmonster062:hacklord@cluster0.rxn6q.mongodb.net/"
     ).coroutine.getDatabase("whiteboardDB")
     single {
         db
@@ -44,5 +46,14 @@ val serverModule = module {
             expiresIn = 2629746000L, // 1 month
             secret = System.getenv("JWT_SECRET") ?: "default_secret"
         )
+    }
+
+    factory {
+        val config = get<TokenConfig>()
+        JWT
+            .require(Algorithm.HMAC256(config.secret))
+            .withAudience(config.audience)
+            .withIssuer(config.issuer)
+            .build()
     }
 }

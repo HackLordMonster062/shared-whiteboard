@@ -99,31 +99,86 @@ fun Route.connection(
                             val userState = onlineUser.state as OnlineUserState.InWhiteboard
                             val manager = onlineBoardsManager.onlineBoards[userState.boardId]!!
 
+                            var response: WhiteboardResponse? = null
+
                             when (request) {
                                 is WhiteboardRequest.DrawLine -> {
-                                    manager.broadcast(
-                                        onlineUser.user.id,
-                                        WhiteboardResponse.DrawBroadcast(
-                                            line = request.line
+                                    val id = manager.drawLine(request.line)
+
+                                    if (id == null) {
+                                        response = WhiteboardResponse.Error(
+                                            message = "Invalid line"
                                         )
-                                    )
+                                    } else {
+                                        manager.broadcast(
+                                            onlineUser.user.id,
+                                            WhiteboardBroadcast.DrawBroadcast(
+                                                line = request.line
+                                            )
+                                        )
+
+                                        response = WhiteboardResponse.DrawLine(
+                                            lineId = id
+                                        )
+                                    }
                                 }
 
                                 is WhiteboardRequest.EraseLine -> {
-                                    manager.broadcast(
-                                        onlineUser.user.id,
-                                        WhiteboardResponse.EraseBroadcast(
-                                            lineID = request.lineId
+                                    val success = manager.eraseLine(request.lineId)
+
+                                    if (success) {
+                                        manager.broadcast(
+                                            onlineUser.user.id,
+                                            WhiteboardBroadcast.EraseBroadcast(
+                                                lineID = request.lineId
+                                            )
                                         )
-                                    )
+
+                                        response = WhiteboardResponse.EraseLine()
+                                    } else {
+                                        response = WhiteboardResponse.Error(
+                                            message = "Invalid line ID"
+                                        )
+                                    }
                                 }
 
                                 is WhiteboardRequest.ExitBoard -> {
-                                    send(Frame.Text(
-                                        Json.encodeToString(WhiteboardResponse.ExitBoard())
-                                    ))
+                                    manager.disconnectUser(onlineUser.user.id)
+
+                                    response = WhiteboardResponse.ExitBoard()
+                                }
+
+                                is WhiteboardRequest.AddUser -> {
+                                    val id = userDataSource.getUserByUsername(
+                                        request.username
+                                    )?.id
+
+                                    if (id == null)
+                                        response = WhiteboardResponse.Error(
+                                            message = "Username not found."
+                                        )
+                                    else
+                                        manager.addUser(id)
+                                }
+
+                                is WhiteboardRequest.RemoveUser -> {
+                                    val id = userDataSource.getUserByUsername(
+                                        request.username
+                                    )?.id
+
+                                    if (id == null)
+                                        response = WhiteboardResponse.Error(
+                                            message = "Username not found."
+                                        )
+                                    else
+                                        manager.removeUser(id)
                                 }
                             }
+
+                            if (response != null)
+                                send(Frame.Text(
+                                    Json.encodeToString(response)
+                                ))
                         }
                     }
                 } else {

@@ -3,6 +3,7 @@ package com.hacklord.routing
 import com.hacklord.components.Whiteboard
 import kotlinx.serialization.Serializable
 
+@Serializable
 sealed interface LobbyResponse {
     val code: Int
 

@@ -3,7 +3,7 @@ package com.hacklord.managers
 import com.hacklord.components.Line
 import com.hacklord.components.OnlineUser
 import com.hacklord.components.Whiteboard
-import com.hacklord.routing.WhiteboardResponse
+import com.hacklord.routing.WhiteboardBroadcast
 import com.hacklord.settings.ValidValues
 import io.ktor.websocket.*
 import kotlinx.serialization.encodeToString
@@ -19,12 +19,6 @@ class WhiteboardManager(
 
     private var currId = info.currLineId
 
-    private fun isUserConnected(userId: String): Boolean {
-        return connectedUsers.any {user ->
-            user.user.id == userId
-        }
-    }
-
     fun connectUser(user: OnlineUser) {
         connectedUsers.add(user)
     }
@@ -35,7 +29,7 @@ class WhiteboardManager(
         }
     }
 
-    suspend fun broadcast(sender: String, response: WhiteboardResponse) {
+    suspend fun broadcast(sender: String, response: WhiteboardBroadcast) {
         if (connectedUsers.any { it.user.id == sender }) {
             connectedUsers.forEach { user ->
                 if (user.user.id != sender) {

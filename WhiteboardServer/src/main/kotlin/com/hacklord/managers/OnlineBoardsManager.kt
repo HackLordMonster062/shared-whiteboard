@@ -14,7 +14,7 @@ class OnlineBoardsManager(
     val onlineBoards: HashMap<String, WhiteboardManager> = hashMapOf()
     private val boardsDataSource = WhiteboardDataSourceImpl(database)
 
-    suspend fun openWhiteboard(boardId: String): WhiteboardManager {
+    private suspend fun openWhiteboard(boardId: String): WhiteboardManager {
         val board = boardsDataSource.getWhiteboardById(ObjectId(boardId))
 
         board ?: throw Exception("Invalid whiteboard ID")

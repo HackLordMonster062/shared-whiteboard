@@ -23,4 +23,16 @@ sealed interface WhiteboardRequest {
     data class ExitBoard(
         override val code: Int = 203
     ) : WhiteboardRequest
+
+    @Serializable
+    data class AddUser(
+        override val code: Int = 220,
+        val username: String
+    ) : WhiteboardRequest
+
+    @Serializable
+    data class RemoveUser(
+        override val code: Int = 221,
+        val username: String
+    ) : WhiteboardRequest
 }

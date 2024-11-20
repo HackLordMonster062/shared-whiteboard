@@ -1,6 +1,7 @@
 package com.hacklord.di
 
 import com.hacklord.components.auth.JwtTokenService
+import com.hacklord.config.TokenConfig
 import com.hacklord.dataSources.UserDataSourceImpl
 import com.hacklord.dataSources.WhiteboardDataSourceImpl
 import com.hacklord.interfaces.UserDataSource
@@ -11,10 +12,11 @@ import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 
 val serverModule = module {
+    val db = KMongo.createClient(
+        connectionString = "mongodb://localhost:27017"
+    ).coroutine.getDatabase("whiteboardDB")
     single {
-        KMongo.createClient(
-            connectionString = "mongodb://localhost:27017"
-        ).coroutine.getDatabase("whiteboardDB")
+        db
     }
     single<UserDataSource> {
         UserDataSourceImpl(
@@ -32,6 +34,15 @@ val serverModule = module {
     single {
         OnlineBoardsManager(
             get()
+        )
+    }
+
+    factory {
+        TokenConfig(
+            issuer = "http://0.0.0.0:8080",
+            audience = "users",
+            expiresIn = 2629746000L, // 1 month
+            secret = System.getenv("JWT_SECRET") ?: "default_secret"
         )
     }
 }

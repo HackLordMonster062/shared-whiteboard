@@ -6,9 +6,13 @@ import com.hacklord.config.TokenConfig
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import org.koin.ktor.ext.get
 
-fun Application.configureSecurity(config: TokenConfig) {
+fun Application.configureSecurity(
+    config: TokenConfig = get<TokenConfig>()
+) {
     val jwtRealm = "whiteboard"
+    install(Authentication)
     authentication {
         jwt {
             realm = jwtRealm

@@ -9,7 +9,7 @@ import org.litote.kmongo.eq
 class WhiteboardDataSourceImpl(
     db: CoroutineDatabase
 ) : WhiteboardDataSource {
-    private val boards = db.getCollection<Whiteboard>()
+    private val boards = db.getCollection<Whiteboard>(collectionName = "whiteboards")
 
     override suspend fun getWhiteboardByName(name: String): Whiteboard? {
         return boards.findOne(Whiteboard::name eq name)
@@ -29,7 +29,7 @@ class WhiteboardDataSourceImpl(
     }
 
     override suspend fun updateWhiteboard(board: Whiteboard): Boolean {
-        return boards.updateOneById(board.id, board).wasAcknowledged()
+        return boards.updateOne(Whiteboard::id eq board.id, board).wasAcknowledged()
     }
 
     override suspend fun deleteWhiteboard(id: ObjectId): Boolean {

@@ -12,7 +12,7 @@ import kotlinx.serialization.json.Json
 class WhiteboardManager(
     val info: Whiteboard,
 ) {
-    private val connectedUsers: MutableList<OnlineUser> = mutableListOf()
+    val connectedUsers: MutableList<OnlineUser> = mutableListOf()
 
     val whitelist = info.userWhitelist.toMutableSet()
     private val lines = info.lines.toMutableList()

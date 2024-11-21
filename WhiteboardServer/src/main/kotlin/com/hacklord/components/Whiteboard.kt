@@ -1,14 +1,15 @@
 package com.hacklord.components
 
 import kotlinx.serialization.Serializable
+import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 
 @Serializable
 data class Whiteboard(
     val name: String,
-    val creator: User,
+    val creator: String,
     val userWhitelist: Set<String> = setOf(),
     val lines: List<Line> = listOf(),
     val currLineId: Long = 0,
-    val id: String = ObjectId().toString(),
+    @BsonId val id: String = ObjectId().toString(),
 )

@@ -35,19 +35,8 @@ fun Route.connection(
                 }
             }
         }
-        send(
-            Frame.Text(
-                "Logged in successfully"
-            )
-        )
 
         val decodedJWT: DecodedJWT = jwtVerifier.verify(connectRequest.token)
-
-        send(
-            Frame.Text(
-                "JWT decoded"
-            )
-        )
 
         val userId = decodedJWT.getClaim("userId").asString() ?: run {
             send(
@@ -58,12 +47,6 @@ fun Route.connection(
             return@webSocket
         }
 
-        send(
-            Frame.Text(
-                "Found ID $userId"
-            )
-        )
-
         val user = userDataSource.getUserById(userId) ?: kotlin.run {
             send(
                 Frame.Text(
@@ -73,19 +56,7 @@ fun Route.connection(
             return@webSocket
         }
 
-        send(
-            Frame.Text(
-                "User found"
-            )
-        )
-
         var onlineUser = UserManager.connectUser(user, this)
-
-        send(
-            Frame.Text(
-                "Logged in successfully"
-            )
-        )
 
         incoming.consumeEach {
             if (it is Frame.Text) {
@@ -123,7 +94,12 @@ fun Route.connection(
                             is LobbyRequest.CreateWhiteboard -> {
                                 val boardID = onlineBoardsManager.createWhiteboard(
                                     name = request.name,
-                                    owner = onlineUser.user
+                                    ownerID = onlineUser.user.id
+                                )
+
+                                onlineUser = UserManager.changeState(
+                                    onlineUser,
+                                    OnlineUserState.InWhiteboard(boardID)
                                 )
 
                                 onlineBoardsManager.connectUser(
@@ -204,9 +180,18 @@ fun Route.connection(
                             }
 
                             is WhiteboardRequest.ExitBoard -> {
-                                manager.disconnectUser(onlineUser.user.id)
+                                if (!onlineBoardsManager.disconnectUser(onlineUser.user.id, userState.boardId)) {
+                                    response = WhiteboardResponse.Error(
+                                        message = "An error occurred"
+                                    )
+                                } else {
+                                    response = WhiteboardResponse.ExitBoard()
 
-                                response = WhiteboardResponse.ExitBoard()
+                                    onlineUser = UserManager.changeState(
+                                        onlineUser,
+                                        OnlineUserState.InLobby
+                                    )
+                                }
                             }
 
                             is WhiteboardRequest.AddUser -> {

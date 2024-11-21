@@ -1,7 +1,6 @@
 package com.hacklord.managers
 
 import com.hacklord.components.OnlineUser
-import com.hacklord.components.User
 import com.hacklord.components.Whiteboard
 import com.hacklord.dataSources.WhiteboardDataSourceImpl
 import com.hacklord.managers.UserManager.onlineUsers
@@ -26,10 +25,10 @@ class OnlineBoardsManager(
         return manager
     }
 
-    suspend fun createWhiteboard(name: String, owner: User): String {
+    suspend fun createWhiteboard(name: String, ownerID: String): String {
         val newBoard = Whiteboard(
             name = name,
-            creator = owner,
+            creator = ownerID,
         )
 
         val id = boardsDataSource.insertWhiteboard(newBoard)?.toString()
@@ -54,12 +53,28 @@ class OnlineBoardsManager(
     suspend fun connectUser(user: OnlineUser, boardID: String): Boolean {
         val board = onlineBoards[boardID] ?: openWhiteboard(boardID)
 
-        if (board.info.creator.name == user.user.name || board.whitelist.contains(user.user.id)) {
+        if (board.info.creator == user.user.id || board.whitelist.contains(user.user.id)) {
             board.connectUser(onlineUsers[user.user.id]!!)
 
             return true
         }
 
         return false
+    }
+
+    suspend fun disconnectUser(userId: String, boardID: String): Boolean {
+        val manager = onlineBoards[boardID] ?: return false
+
+        if (!manager.disconnectUser(userId)) return false
+
+        if (manager.connectedUsers.isEmpty()) {
+            val content = manager.closeBoard()
+
+            onlineBoards.remove(boardID)
+
+            return boardsDataSource.updateWhiteboard(content)
+        }
+
+        return true
     }
 }

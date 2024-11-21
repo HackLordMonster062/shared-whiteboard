@@ -15,19 +15,16 @@ import org.litote.kmongo.reactivestreams.KMongo
 
 val serverModule = module {
     val db = KMongo.createClient(
-        connectionString = "mongodb+srv://hackmonster062:hacklord@cluster0.rxn6q.mongodb.net/"
+        connectionString = "mongodb://localhost:27017"
     ).coroutine.getDatabase("whiteboardDB")
-    single {
-        db
-    }
     single<UserDataSource> {
         UserDataSourceImpl(
-            get()
+            db
         )
     }
     single<WhiteboardDataSource> {
         WhiteboardDataSourceImpl(
-            get()
+            db
         )
     }
     single {
@@ -35,7 +32,7 @@ val serverModule = module {
     }
     single {
         OnlineBoardsManager(
-            get()
+            db
         )
     }
 

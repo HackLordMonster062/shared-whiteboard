@@ -16,7 +16,6 @@ class UserDataSourceImpl(
     }
 
     override suspend fun getUserById(id: String): User? {
-        println("User Id: ${id} found: ${users.findOne(User::id eq id)}")
         return users.findOne(User::id eq id)
     }
 

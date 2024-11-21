@@ -1,38 +1,38 @@
 package com.hacklord.routing
 
 import com.hacklord.components.Line
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Polymorphic
 sealed interface WhiteboardRequest {
-    val code: Int
-
     @Serializable
+    @SerialName("200")
     data class DrawLine(
-        override val code: Int = 200,
         val line: Line
     ): WhiteboardRequest
 
     @Serializable
+    @SerialName("201")
     data class EraseLine(
-        override val code: Int = 201,
         val lineId: Long
     ) : WhiteboardRequest
 
     @Serializable
-    data class ExitBoard(
-        override val code: Int = 203
-    ) : WhiteboardRequest
+    @SerialName("202")
+    data object ExitBoard : WhiteboardRequest
 
     @Serializable
+    @SerialName("220")
     data class AddUser(
-        override val code: Int = 220,
         val username: String
     ) : WhiteboardRequest
 
     @Serializable
+    @SerialName("221")
     data class RemoveUser(
-        override val code: Int = 221,
         val username: String
     ) : WhiteboardRequest
 }

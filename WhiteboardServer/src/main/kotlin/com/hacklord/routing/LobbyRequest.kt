@@ -1,31 +1,31 @@
 package com.hacklord.routing
 
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Polymorphic
 sealed interface LobbyRequest {
-    val code: Int
+    @Serializable
+    @SerialName("100")
+    data object GetWhiteboards : LobbyRequest
 
     @Serializable
-    data class GetWhiteboards(
-        override val code: Int = 100
-    ) : LobbyRequest
-
-    @Serializable
+    @SerialName("101")
     data class EnterWhiteboard(
-        override val code: Int = 101,
         val boardID: String
     ) : LobbyRequest
 
     @Serializable
+    @SerialName("102")
     data class CreateWhiteboard(
-        override val code: Int = 102,
         val name: String
     ) : LobbyRequest
 
     @Serializable
+    @SerialName("103")
     data class DeleteWhiteboard(
-        override val code: Int = 103,
         val boardID: String
     ) : LobbyRequest
 }

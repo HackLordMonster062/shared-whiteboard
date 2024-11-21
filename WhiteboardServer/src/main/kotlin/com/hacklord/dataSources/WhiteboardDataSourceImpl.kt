@@ -9,7 +9,7 @@ import org.litote.kmongo.eq
 class WhiteboardDataSourceImpl(
     db: CoroutineDatabase
 ) : WhiteboardDataSource {
-    private val boards = db.getCollection<Whiteboard>(collectionName = "whiteboards")
+    private val boards = db.getCollection<Whiteboard>()
 
     override suspend fun getWhiteboardByName(name: String): Whiteboard? {
         return boards.findOne(Whiteboard::name eq name)

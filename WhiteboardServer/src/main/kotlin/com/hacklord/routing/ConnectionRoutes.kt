@@ -7,8 +7,6 @@ import com.hacklord.interfaces.UserDataSource
 import com.hacklord.interfaces.WhiteboardDataSource
 import com.hacklord.managers.OnlineBoardsManager
 import com.hacklord.managers.UserManager
-import io.ktor.http.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
@@ -37,21 +35,57 @@ fun Route.connection(
                 }
             }
         }
+        send(
+            Frame.Text(
+                "Logged in successfully"
+            )
+        )
 
         val decodedJWT: DecodedJWT = jwtVerifier.verify(connectRequest.token)
 
+        send(
+            Frame.Text(
+                "JWT decoded"
+            )
+        )
+
         val userId = decodedJWT.getClaim("userId").asString() ?: run {
-            call.respond(HttpStatusCode.BadRequest, "User ID not given.")
+            send(
+                Frame.Text(
+                    "No user ID given"
+                )
+            )
             return@webSocket
         }
+
+        send(
+            Frame.Text(
+                "Found ID $userId"
+            )
+        )
 
         val user = userDataSource.getUserById(userId) ?: kotlin.run {
-            println("not found")
-            call.respond(HttpStatusCode.Conflict, "Invalid user ID.")
+            send(
+                Frame.Text(
+                    "User not found"
+                )
+            )
             return@webSocket
         }
 
+        send(
+            Frame.Text(
+                "User found"
+            )
+        )
+
         var onlineUser = UserManager.connectUser(user, this)
+
+        send(
+            Frame.Text(
+                "Logged in successfully"
+            )
+        )
 
         incoming.consumeEach {
             if (it is Frame.Text) {
@@ -59,9 +93,12 @@ fun Route.connection(
                     is OnlineUserState.InLobby -> {
                         val response: LobbyResponse
 
-                        println(it.readText())
+                        val json = Json {
+                            serializersModule = lobbyRequestModule
+                            classDiscriminator = "code"
+                        }
 
-                        when (val request = Json.decodeFromString<LobbyRequest>(it.readText())) {
+                        when (val request = json.decodeFromString<LobbyRequest>(it.readText())) {
                             is LobbyRequest.GetWhiteboards -> {
                                 val boards = whiteboardDataSource.getAllWhiteboards()
 
@@ -113,7 +150,12 @@ fun Route.connection(
                         ))
                     }
                     is OnlineUserState.InWhiteboard -> {
-                        val request = Json.decodeFromString<WhiteboardRequest>(it.readText())
+                        val json = Json {
+                            serializersModule = whiteboardRequestModule
+                            classDiscriminator = "code"
+                        }
+
+                        val request = json.decodeFromString<WhiteboardRequest>(it.readText())
 
                         val userState = onlineUser.state as OnlineUserState.InWhiteboard
                         val manager = onlineBoardsManager.onlineBoards[userState.boardId]!!

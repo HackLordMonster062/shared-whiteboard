@@ -1,11 +1,8 @@
 package org.hacklord.sharedcanvas.ui.canvas_screen
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -19,7 +16,8 @@ class CanvasViewModel(
 ) : ViewModel() {
     private val lines: SnapshotStateList<Line> = mutableStateListOf()
 
-    var currColor by mutableStateOf(Color.Black)
+    private val _canvasState = mutableStateOf(CanvasState())
+    val canvasState = _canvasState
 
     init {
         lines.addAll(initLines)
@@ -42,7 +40,10 @@ class CanvasViewModel(
                 }
             }
             is CanvasEvent.SetColor -> {
-                currColor = event.color
+                _canvasState.value = _canvasState.value.copy(currColor = event.color)
+            }
+            is CanvasEvent.SetWidth -> {
+                _canvasState.value = _canvasState.value.copy(currWidth = event.width)
             }
         }
     }

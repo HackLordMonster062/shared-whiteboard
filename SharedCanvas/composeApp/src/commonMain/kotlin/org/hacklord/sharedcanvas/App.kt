@@ -3,8 +3,8 @@ package org.hacklord.sharedcanvas
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasScreen
+import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.sqrt
 
@@ -31,11 +33,17 @@ import kotlin.math.sqrt
 fun App() {
     MaterialTheme {
         //MainCanvas()
+        CanvasScreen(
+            CanvasState(
+                currColor = Color.Black,
+                currWidth = 1
+            )
+        ) { }
     }
 }
 
 @Composable
-fun MainCanvas() {
+fun MainCanvas(modifier: Modifier = Modifier) {
     var path by remember { mutableStateOf(Path()) }
 
     val paint = Paint().apply {
@@ -44,11 +52,13 @@ fun MainCanvas() {
 
     var currPoint by remember { mutableStateOf(Offset(0f, 0f)) }
 
-    BoxWithConstraints {
+    BoxWithConstraints(
+        modifier = modifier
+    ) {
         Canvas(
             modifier = Modifier
                 .padding(10.dp)
-                .size(this.maxWidth, this.maxHeight)
+                .fillMaxSize()
                 .pointerInput(true) {
                     detectDragGestures(
                         onDragStart = { offset ->

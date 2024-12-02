@@ -1,6 +1,5 @@
 package org.hacklord.sharedcanvas.ui.canvas_screen
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.hacklord.sharedcanvas.AppConstants
-import org.hacklord.sharedcanvas.MainCanvas
 import org.hacklord.sharedcanvas.ui.canvas_screen.components.ColorItem
+import org.hacklord.sharedcanvas.ui.canvas_screen.components.DrawingCanvas
 
 @Composable
 fun CanvasScreen(
@@ -23,8 +22,9 @@ fun CanvasScreen(
     Column(
         horizontalAlignment = Alignment.End
     ) {
-        MainCanvas(
+        DrawingCanvas(
             state.currColor,
+            state.currWidth.dp,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
@@ -33,7 +33,6 @@ fun CanvasScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp),
-            horizontalArrangement = Arrangement.End
         ) {
             AppConstants.COLORS.forEach { color ->
                 ColorItem(

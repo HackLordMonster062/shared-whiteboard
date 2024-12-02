@@ -4,5 +4,5 @@ import androidx.compose.ui.graphics.Color
 
 data class CanvasState(
     val currColor: Color = Color.Black,
-    val currWidth: Int = 1
+    val currWidth: Int = 5
 )

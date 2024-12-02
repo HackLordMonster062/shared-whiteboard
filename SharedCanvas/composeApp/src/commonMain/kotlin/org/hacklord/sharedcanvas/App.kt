@@ -24,8 +24,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasScreen
-import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasState
+import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 import kotlin.math.sqrt
 
 @Composable
@@ -33,12 +34,12 @@ import kotlin.math.sqrt
 fun App() {
     MaterialTheme {
         //MainCanvas()
+        val viewModel = koinInject<CanvasViewModel>()
+
         CanvasScreen(
-            CanvasState(
-                currColor = Color.Black,
-                currWidth = 1
-            )
-        ) { }
+            viewModel.canvasState,
+            onEvent = viewModel::onEvent
+        )
     }
 }
 

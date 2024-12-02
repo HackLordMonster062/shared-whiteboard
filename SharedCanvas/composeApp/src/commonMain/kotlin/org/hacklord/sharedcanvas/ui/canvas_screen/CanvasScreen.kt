@@ -24,6 +24,7 @@ fun CanvasScreen(
         horizontalAlignment = Alignment.End
     ) {
         MainCanvas(
+            state.currColor,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)

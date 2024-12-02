@@ -19,7 +19,7 @@ class CanvasViewModel(
     private val lines: SnapshotStateList<Line> = mutableStateListOf()
 
     private var _canvasState by mutableStateOf(CanvasState())
-    val canvasState = _canvasState
+    val canvasState get() = _canvasState
 
     init {
         lines.addAll(initLines)

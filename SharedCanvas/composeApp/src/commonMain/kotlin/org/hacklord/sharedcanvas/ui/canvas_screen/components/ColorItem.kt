@@ -1,7 +1,6 @@
 package org.hacklord.sharedcanvas.ui.canvas_screen.components
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,13 +26,16 @@ fun ColorItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scale by animateFloatAsState(targetValue = if (isSelected) 1.1f else 1f)
+    val scale by animateFloatAsState(
+        targetValue = if (isSelected) 1.1f else 1f
+    )
     val interactionSource = remember { MutableInteractionSource() }
 
     Box(
         modifier = modifier
             .width(diameter)
             .height(diameter)
+            .scale(scale)
             .background(
                 color = color,
                 shape = CircleShape
@@ -43,7 +45,6 @@ fun ColorItem(
                 color = Color.Black,
                 shape = CircleShape
             )
-            .scale(scale)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null

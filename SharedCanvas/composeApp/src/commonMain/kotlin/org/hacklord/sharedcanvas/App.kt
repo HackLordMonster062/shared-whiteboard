@@ -44,8 +44,10 @@ fun App() {
 }
 
 @Composable
-fun MainCanvas(modifier: Modifier = Modifier) {
+fun MainCanvas(color: Color, modifier: Modifier = Modifier) {
     var path by remember { mutableStateOf(Path()) }
+
+    var paths by remember { mutableStateOf<List<Pair<Path, Color>>>(listOf()) }
 
     val paint = Paint().apply {
         isAntiAlias = true
@@ -76,13 +78,30 @@ fun MainCanvas(modifier: Modifier = Modifier) {
 
                                 currPoint = change.position
                             }
+                        },
+                        onDragEnd = {
+                            paths = paths + (Path().apply {addPath(path)} to color)
+                            path = Path()
                         }
                     )
                 }
         ) {
+            paths.forEach { path ->
+                println(path.second)
+                drawPath(
+                    path = path.first,
+                    color = path.second,
+                    style = Stroke(
+                        width = 5.dp.toPx(),
+                        cap = StrokeCap.Round,
+                        join = StrokeJoin.Round,
+                    )
+                )
+            }
+
             drawPath(
                 path = path,
-                color = Color.Black,
+                color = color,
                 style = Stroke(
                     width = 5.dp.toPx(),
                     cap = StrokeCap.Round,

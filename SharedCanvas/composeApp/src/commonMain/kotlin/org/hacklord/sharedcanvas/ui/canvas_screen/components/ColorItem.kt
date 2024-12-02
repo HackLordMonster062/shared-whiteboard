@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColorItem(
     color: Color,
@@ -46,7 +45,10 @@ fun ColorItem(
             )
             .scale(scale)
             .clickable(
-                onClick = onClick,
-            )
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                onClick()
+            }
     )
 }

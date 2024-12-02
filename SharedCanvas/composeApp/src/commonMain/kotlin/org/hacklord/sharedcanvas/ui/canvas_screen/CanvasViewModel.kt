@@ -16,26 +16,31 @@ class CanvasViewModel(
     private val repository: CanvasRequestsRepository,
     initLines: List<Line>
 ) : ViewModel() {
-    private val lines: SnapshotStateList<Line> = mutableStateListOf()
-
     private var _canvasState by mutableStateOf(CanvasState())
     val canvasState get() = _canvasState
 
     init {
-        lines.addAll(initLines)
+        _canvasState.lines.addAll(initLines)
     }
 
     fun onEvent(event: CanvasEvent) {
         when (event) {
             is CanvasEvent.AddLine -> {
-                lines.add(event.line)
+                val newLine = Line(
+                    _canvasState.currColor,
+                    _canvasState.currWidth,
+                    event.line
+                )
+
+                _canvasState.lines.add(newLine)
 
                 viewModelScope.launch {
-                    repository.sendRequest(CanvasAction.AddLine(event.line))
+                    repository.sendRequest(CanvasAction.AddLine(newLine))
+                    //TODO: Receive the new line's id
                 }
             }
             is CanvasEvent.RemoveLine -> {
-                lines.removeIf { it.id == event.id }
+                _canvasState.lines.removeIf { it.id == event.id }
 
                 viewModelScope.launch {
                     repository.sendRequest(CanvasAction.RemoveLine(event.id))

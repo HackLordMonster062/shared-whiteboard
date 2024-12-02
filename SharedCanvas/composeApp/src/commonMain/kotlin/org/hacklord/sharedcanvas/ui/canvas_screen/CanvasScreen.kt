@@ -23,8 +23,8 @@ fun CanvasScreen(
         horizontalAlignment = Alignment.End
     ) {
         DrawingCanvas(
-            state.currColor,
-            state.currWidth.dp,
+            canvasState = state,
+            onEvent = onEvent,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)

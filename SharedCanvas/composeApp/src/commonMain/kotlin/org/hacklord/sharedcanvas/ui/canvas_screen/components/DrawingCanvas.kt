@@ -12,24 +12,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.hacklord.sharedcanvas.components.Line
+import org.hacklord.sharedcanvas.components.Point
+import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasEvent
+import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasState
 import kotlin.math.sqrt
 
-
 @Composable
-fun DrawingCanvas(color: Color, lineWidth: Dp, modifier: Modifier = Modifier) {
-    var path by remember { mutableStateOf(Path()) }
-
-    var paths by remember { mutableStateOf<List<Pair<Path, Color>>>(listOf()) }
-
-    var currPoint by remember { mutableStateOf(Offset(0f, 0f)) }
+fun DrawingCanvas(
+    canvasState: CanvasState,
+    onEvent: (CanvasEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var currentLine by remember { mutableStateOf<List<Point>>(listOf()) }
 
     BoxWithConstraints(
         modifier = modifier
@@ -38,65 +40,72 @@ fun DrawingCanvas(color: Color, lineWidth: Dp, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxSize()
-                .pointerInput(true, color) {
+                .pointerInput(true, canvasState.currColor) {
                     detectDragGestures(
                         onDragStart = { offset ->
-                            path.moveTo(offset.x, offset.y)
-                            currPoint = offset
+                            currentLine = listOf(Point(offset.x, offset.y))
                         },
                         onDrag = { change, _ ->
                             change.consume()
-
-                            if (currPoint.distanceTo(change.position) >= 5f) {
-                                currPoint.let { prev ->
-                                    val midPoint = Offset(
-                                        (prev.x + change.position.x) / 2,
-                                        (prev.y + change.position.y) / 2
-                                    )
-
-                                    path = Path().apply {
-                                        addPath(path)
-                                        quadraticBezierTo(prev.x, prev.y, midPoint.x, midPoint.y)
-                                    }
-                                }
-                                currPoint = change.position
+                            val lastPoint = currentLine.lastOrNull()
+                            if (lastPoint != null && Offset(lastPoint.x, lastPoint.y).distanceTo(change.position) >= 5f) {
+                                currentLine = currentLine + Point(change.position.x, change.position.y)
                             }
                         },
                         onDragEnd = {
-                            paths = paths + (Path().apply {addPath(path)} to color)
-                            path = Path()
+                            onEvent(CanvasEvent.AddLine(currentLine))
+                            currentLine = listOf()
                         }
                     )
                 }
         ) {
-            paths.forEach { path ->
-                drawPath(
-                    path = path.first,
-                    color = path.second,
-                    style = Stroke(
-                        width = lineWidth.toPx(),
-                        cap = StrokeCap.Round,
-                        join = StrokeJoin.Round,
-                    )
-                )
+            canvasState.lines.forEach { line ->
+                drawLine(line, this)
             }
 
-            drawPath(
-                path = path,
-                color = color,
-                style = Stroke(
-                    width = lineWidth.toPx(),
-                    cap = StrokeCap.Round,
-                    join = StrokeJoin.Round,
+            if (currentLine.isNotEmpty()) {
+                val tempLine = Line(
+                    color = canvasState.currColor,
+                    width = canvasState.currWidth,
+                    vertices = currentLine
                 )
-            )
+                drawLine(tempLine, this)
+            }
         }
     }
 }
+
 
 fun Offset.distanceTo(other: Offset): Float {
     val x = other.x - this.x
     val y = other.y - this.y
 
     return sqrt(x * x + y * y)
+}
+
+fun drawLine(
+    line: Line,
+    drawScope: DrawScope
+) {
+    val path = Path().apply {
+        if (line.vertices.isNotEmpty()) {
+            moveTo(line.vertices.first().x, line.vertices.first().y)
+            for (i in 1 until line.vertices.size) {
+                val prev = line.vertices[i - 1]
+                val curr = line.vertices[i]
+                val midPoint = Point((prev.x + curr.x) / 2, (prev.y + curr.y) / 2)
+                quadraticBezierTo(prev.x, prev.y, midPoint.x, midPoint.y)
+            }
+        }
+    }
+
+    drawScope.drawPath(
+        path = path,
+        color = line.color,
+        style = Stroke(
+            width = line.width.toFloat(),
+            cap = StrokeCap.Round,
+            join = StrokeJoin.Round
+        )
+    )
 }

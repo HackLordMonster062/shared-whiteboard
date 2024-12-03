@@ -11,4 +11,12 @@ object AppConstants {
         Color.Green,
         Color.Blue
     )
+
+    val WIDTHS = listOf(
+        1,
+        3,
+        5,
+        7,
+        9
+    )
 }

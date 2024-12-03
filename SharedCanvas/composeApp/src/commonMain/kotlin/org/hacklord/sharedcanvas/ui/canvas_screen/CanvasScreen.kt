@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import org.hacklord.sharedcanvas.AppConstants
 import org.hacklord.sharedcanvas.ui.canvas_screen.components.ColorItem
 import org.hacklord.sharedcanvas.ui.canvas_screen.components.DrawingCanvas
+import org.hacklord.sharedcanvas.ui.canvas_screen.components.WidthSlider
 
 @Composable
 fun CanvasScreen(
@@ -27,7 +28,7 @@ fun CanvasScreen(
             onEvent = onEvent,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(0.8f)
         )
         Row(
             modifier = Modifier
@@ -38,13 +39,24 @@ fun CanvasScreen(
                 ColorItem(
                     color,
                     state.currColor == color,
-                    60.dp,
+                    40.dp,
                     onClick = {
                         onEvent(CanvasEvent.SetColor(color))
                     }
                 )
                 Spacer(Modifier.width(15.dp))
             }
+
+            WidthSlider(
+                value = state.currWidth,
+                steps = AppConstants.WIDTHS,
+                onChange = { newValue ->
+                    onEvent(CanvasEvent.SetWidth(
+                        newValue
+                    ))
+                },
+                modifier = Modifier
+            )
         }
     }
 }

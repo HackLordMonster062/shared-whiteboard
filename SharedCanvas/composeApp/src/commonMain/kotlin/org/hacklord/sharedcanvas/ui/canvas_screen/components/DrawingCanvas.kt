@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import org.hacklord.sharedcanvas.AppConstants
 import org.hacklord.sharedcanvas.components.Line
 import org.hacklord.sharedcanvas.components.Point
 import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasEvent
@@ -66,7 +67,7 @@ fun DrawingCanvas(
             if (currentLine.isNotEmpty()) {
                 val tempLine = Line(
                     color = canvasState.currColor,
-                    width = canvasState.currWidth,
+                    width = AppConstants.WIDTHS[canvasState.currWidth],
                     vertices = currentLine
                 )
                 drawLine(tempLine, this)

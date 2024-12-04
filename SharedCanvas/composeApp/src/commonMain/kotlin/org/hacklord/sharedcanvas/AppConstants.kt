@@ -20,4 +20,6 @@ object AppConstants {
         11,
         14
     )
+
+    val ERASE_RADIUS = 5f
 }

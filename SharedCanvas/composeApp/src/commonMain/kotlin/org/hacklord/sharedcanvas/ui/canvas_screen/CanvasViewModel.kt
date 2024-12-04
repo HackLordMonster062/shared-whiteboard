@@ -24,17 +24,19 @@ class CanvasViewModel(
     fun onEvent(event: CanvasEvent) {
         when (event) {
             is CanvasEvent.AddLine -> {
-                val newLine = Line(
-                    _canvasState.currColor,
-                    _canvasState.currWidth,
-                    event.line
-                )
+                if (_canvasState.drawingMode is DrawingMode.Draw) {
+                    val newLine = Line(
+                        (_canvasState.drawingMode as DrawingMode.Draw).color,
+                        _canvasState.currWidth,
+                        event.line
+                    )
 
-                _canvasState.lines.add(newLine)
+                    _canvasState.lines.add(newLine)
 
-                viewModelScope.launch {
-                    repository.sendRequest(CanvasAction.AddLine(newLine))
-                    //TODO: Receive the new line's id
+                    viewModelScope.launch {
+                        repository.sendRequest(CanvasAction.AddLine(newLine))
+                        //TODO: Receive the new line's id
+                    }
                 }
             }
             is CanvasEvent.RemoveLine -> {
@@ -45,7 +47,14 @@ class CanvasViewModel(
                 }
             }
             is CanvasEvent.SetColor -> {
-                _canvasState = _canvasState.copy(currColor = event.color)
+                _canvasState = _canvasState.copy(
+                    drawingMode = DrawingMode.Draw(color = event.color)
+                )
+            }
+            is CanvasEvent.SetEraser -> {
+                _canvasState = _canvasState.copy(
+                    drawingMode = DrawingMode.Erase
+                )
             }
             is CanvasEvent.SetWidth -> {
                 _canvasState = _canvasState.copy(currWidth = event.width)

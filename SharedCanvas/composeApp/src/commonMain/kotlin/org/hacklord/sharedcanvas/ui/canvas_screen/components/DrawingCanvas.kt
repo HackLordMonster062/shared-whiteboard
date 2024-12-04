@@ -24,6 +24,7 @@ import org.hacklord.sharedcanvas.components.Line
 import org.hacklord.sharedcanvas.components.Point
 import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasEvent
 import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasState
+import org.hacklord.sharedcanvas.ui.canvas_screen.DrawingMode
 import kotlin.math.sqrt
 
 @Composable
@@ -41,32 +42,52 @@ fun DrawingCanvas(
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxSize()
-                .pointerInput(true, canvasState.currColor) {
-                    detectDragGestures(
-                        onDragStart = { offset ->
-                            currentLine = listOf(Point(offset.x, offset.y))
-                        },
-                        onDrag = { change, _ ->
-                            change.consume()
-                            val lastPoint = currentLine.lastOrNull()
-                            if (lastPoint != null && Offset(lastPoint.x, lastPoint.y).distanceTo(change.position) >= 5f) {
-                                currentLine = currentLine + Point(change.position.x, change.position.y)
-                            }
-                        },
-                        onDragEnd = {
-                            onEvent(CanvasEvent.AddLine(currentLine))
-                            currentLine = listOf()
-                        }
-                    )
+                .pointerInput(true, canvasState) {
+                    when (canvasState.drawingMode) {
+                        is DrawingMode.Draw -> detectDragGestures(
+                                onDragStart = { offset ->
+                                    currentLine = listOf(Point(offset.x, offset.y))
+                                },
+                                onDrag = { change, _ ->
+                                    change.consume()
+                                    val lastPoint = currentLine.lastOrNull()
+                                    if (lastPoint != null && Offset(
+                                            lastPoint.x,
+                                            lastPoint.y
+                                        ).distanceTo(change.position) >= 5f
+                                    ) {
+                                        currentLine = currentLine + Point(
+                                            change.position.x,
+                                            change.position.y
+                                        )
+                                    }
+                                },
+                                onDragEnd = {
+                                    onEvent(CanvasEvent.AddLine(currentLine))
+                                    currentLine = listOf()
+                                }
+                            )
+                        is DrawingMode.Erase -> detectDragGestures(
+                                onDrag = { change, _ ->
+                                    canvasState.lines.forEach { line ->
+                                        line.vertices.forEach { point ->
+                                            if (change.position.distanceTo(point) <= AppConstants.ERASE_RADIUS) {
+                                                onEvent(CanvasEvent.RemoveLine(line.id!!))
+                                            }
+                                        }
+                                    }
+                                }
+                            )
+                    }
                 }
         ) {
             canvasState.lines.forEach { line ->
                 drawLine(line, this)
             }
 
-            if (currentLine.isNotEmpty()) {
+            if (currentLine.isNotEmpty() && canvasState.drawingMode is DrawingMode.Draw) {
                 val tempLine = Line(
-                    color = canvasState.currColor,
+                    color = canvasState.drawingMode.color,
                     width = canvasState.currWidth,
                     vertices = currentLine
                 )
@@ -76,8 +97,14 @@ fun DrawingCanvas(
     }
 }
 
-
 fun Offset.distanceTo(other: Offset): Float {
+    val x = other.x - this.x
+    val y = other.y - this.y
+
+    return sqrt(x * x + y * y)
+}
+
+fun Offset.distanceTo(other: Point): Float {
     val x = other.x - this.x
     val y = other.y - this.y
 

@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import org.hacklord.sharedcanvas.AppConstants
 import org.hacklord.sharedcanvas.ui.canvas_screen.components.ColorItem
 import org.hacklord.sharedcanvas.ui.canvas_screen.components.DrawingCanvas
+import org.hacklord.sharedcanvas.ui.canvas_screen.components.EraserItem
 import org.hacklord.sharedcanvas.ui.canvas_screen.components.WidthSlider
 
 @Composable
@@ -42,7 +43,8 @@ fun CanvasScreen(
             AppConstants.COLORS.forEach { color ->
                 ColorItem(
                     color,
-                    state.currColor == color,
+                    state.drawingMode is DrawingMode.Draw &&
+                            state.drawingMode.color == color,
                     40.dp,
                     onClick = {
                         onEvent(CanvasEvent.SetColor(color))
@@ -50,6 +52,14 @@ fun CanvasScreen(
                 )
                 Spacer(Modifier.width(15.dp))
             }
+
+            EraserItem(
+                isSelected = state.drawingMode is DrawingMode.Erase,
+                diameter = 40.dp,
+                onClick = {
+                    onEvent(CanvasEvent.SetEraser)
+                }
+            )
 
             Spacer(
                 Modifier

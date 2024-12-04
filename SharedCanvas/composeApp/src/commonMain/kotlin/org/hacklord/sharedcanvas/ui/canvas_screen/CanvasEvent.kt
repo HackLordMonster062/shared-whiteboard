@@ -8,5 +8,6 @@ sealed interface CanvasEvent {
     data class AddLine(val line: List<Point>) : CanvasEvent
     data class RemoveLine(val id: Long) : CanvasEvent
     data class SetColor(val color: Color) : CanvasEvent
+    data object SetEraser : CanvasEvent
     data class SetWidth(val width: Int) : CanvasEvent
 }

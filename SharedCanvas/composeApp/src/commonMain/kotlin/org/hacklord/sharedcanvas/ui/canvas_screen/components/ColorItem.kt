@@ -1,22 +1,23 @@
 package org.hacklord.sharedcanvas.ui.canvas_screen.components
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.painterResource
+import sharedcanvas.composeapp.generated.resources.ColorItem
+import sharedcanvas.composeapp.generated.resources.Res
 
 @Composable
 fun ColorItem(
@@ -31,20 +32,14 @@ fun ColorItem(
     )
     val interactionSource = remember { MutableInteractionSource() }
 
-    Box(
+    Image(
+        painter = painterResource(Res.drawable.ColorItem),
+        contentDescription = null,
+        colorFilter = ColorFilter.tint(color, blendMode = BlendMode.Modulate),
         modifier = modifier
             .width(diameter)
             .height(diameter)
             .scale(scale)
-            .background(
-                color = color,
-                shape = CircleShape
-            )
-            .border(
-                width = 2.dp,
-                color = Color.Black,
-                shape = CircleShape
-            )
             .clickable(
                 interactionSource = interactionSource,
                 indication = null

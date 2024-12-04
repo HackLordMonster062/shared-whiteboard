@@ -33,7 +33,7 @@ fun WidthSlider(
     Image(
         painter = painterResource(Res.drawable.SliderBackground),
         contentDescription = null,
-        modifier = Modifier
+        modifier = modifier
             .onSizeChanged { size = it.toSize() * .95f }
             .pointerInput(true) {
                 detectTapGestures(
@@ -65,7 +65,6 @@ fun WidthSlider(
             .offset {
                 val stepSize = size.width / (steps.size - 1)
                 val pos = currStep * stepSize + stepSize / 4
-                println(pos)
                 IntOffset(x = -pos.toInt(), y = 0)
             }
     )

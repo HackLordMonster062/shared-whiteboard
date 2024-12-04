@@ -47,6 +47,11 @@ kotlin {
     }
 }
 
+compose.resources {
+    publicResClass = false
+    generateResClass = auto
+}
+
 android {
     namespace = "org.hacklord.sharedcanvas"
     compileSdk = libs.versions.android.compileSdk.get().toInt()

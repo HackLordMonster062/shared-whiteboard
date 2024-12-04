@@ -7,6 +7,6 @@ import org.hacklord.sharedcanvas.components.Line
 
 data class CanvasState(
     val currColor: Color = Color.Black,
-    val currWidth: Int = 5,
+    val currWidth: Int = 2,
     val lines: SnapshotStateList<Line> = mutableStateListOf()
 )

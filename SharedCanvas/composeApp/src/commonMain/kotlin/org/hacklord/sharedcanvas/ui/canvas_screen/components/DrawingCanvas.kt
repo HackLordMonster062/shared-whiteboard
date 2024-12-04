@@ -67,7 +67,7 @@ fun DrawingCanvas(
             if (currentLine.isNotEmpty()) {
                 val tempLine = Line(
                     color = canvasState.currColor,
-                    width = AppConstants.WIDTHS[canvasState.currWidth],
+                    width = canvasState.currWidth,
                     vertices = currentLine
                 )
                 drawLine(tempLine, this)
@@ -104,7 +104,7 @@ fun drawLine(
         path = path,
         color = line.color,
         style = Stroke(
-            width = line.width.toFloat(),
+            width = AppConstants.WIDTHS[line.width].toFloat(),
             cap = StrokeCap.Round,
             join = StrokeJoin.Round
         )

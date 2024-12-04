@@ -13,10 +13,10 @@ object AppConstants {
     )
 
     val WIDTHS = listOf(
-        1,
-        3,
+        2,
         5,
-        7,
-        9
+        8,
+        11,
+        14
     )
 }

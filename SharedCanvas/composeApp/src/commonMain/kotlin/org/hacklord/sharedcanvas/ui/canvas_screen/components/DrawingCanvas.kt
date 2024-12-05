@@ -54,7 +54,7 @@ fun DrawingCanvas(
                                     if (lastPoint != null && Offset(
                                             lastPoint.x,
                                             lastPoint.y
-                                        ).distanceTo(change.position) >= 5f
+                                        ).distanceTo(change.position) >= AppConstants.DRAWING_BUFFER
                                     ) {
                                         currentLine = currentLine + Point(
                                             change.position.x,
@@ -71,7 +71,7 @@ fun DrawingCanvas(
                                 onDrag = { change, _ ->
                                     canvasState.lines.forEach { line ->
                                         line.vertices.forEach { point ->
-                                            if (change.position.distanceTo(point) <= AppConstants.ERASE_RADIUS) {
+                                            if (change.position.distanceTo(point) <= AppConstants.DRAWING_BUFFER) {
                                                 onEvent(CanvasEvent.RemoveLine(line.id!!))
                                             }
                                         }

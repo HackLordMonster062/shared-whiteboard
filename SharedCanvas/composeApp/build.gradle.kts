@@ -39,6 +39,9 @@ kotlin {
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+
+            implementation(libs.retrofit)
+            implementation(libs.multiplatform.settings)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

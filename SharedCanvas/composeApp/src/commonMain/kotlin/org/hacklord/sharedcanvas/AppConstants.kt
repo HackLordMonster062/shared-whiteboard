@@ -21,5 +21,5 @@ object AppConstants {
         14
     )
 
-    val ERASE_RADIUS = 5f
+    const val DRAWING_BUFFER = 5f
 }

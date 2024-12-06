@@ -1,13 +1,16 @@
 package org.hacklord.sharedcanvas.ui.authScreens.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import sharedcanvas.composeapp.generated.resources.FieldLine
@@ -26,18 +29,25 @@ fun AuthFormField(
     Column(
         modifier = modifier
     ) {
-        TextField(
+        BasicTextField(
             value = value,
             onValueChange = onChange,
             textStyle = TextStyle(
-                fontFamily = fontFamily
+                fontFamily = fontFamily,
+                fontSize = 24.sp
             ),
-            placeholder = {
-                Text(
-                    text = hint,
-                    fontFamily = fontFamily
-                )
-            }
+            decorationBox = { innerTextField -> Box {
+                if (value.isEmpty()) {
+                    Text(
+                        text = hint,
+                        fontFamily = fontFamily,
+                        fontSize = 24.sp
+                    )
+                }
+
+                innerTextField()
+            } },
+            visualTransformation = VisualTransformation.None,
         )
 
         Image(

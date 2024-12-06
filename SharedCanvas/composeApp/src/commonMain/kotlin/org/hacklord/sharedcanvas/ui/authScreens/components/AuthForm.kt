@@ -1,8 +1,11 @@
 package org.hacklord.sharedcanvas.ui.authScreens.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,16 +21,22 @@ fun AuthForm(
     background: Painter,
     modifier: Modifier = Modifier
 ) {
-    Box {
+    Box(
+        modifier = modifier
+    ) {
         Image(
             painter = background,
             contentDescription = null,
-            modifier = modifier
+            modifier = Modifier
+                .fillMaxSize()
         )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier
+            verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(.7f)
         ) {
             AuthFormField(
                 value = authState.username,
@@ -36,7 +45,7 @@ fun AuthForm(
                 },
                 hint = "Username",
                 modifier = Modifier
-                    .fillMaxWidth(.7f)
+                    .fillMaxWidth(.6f)
             )
             AuthFormField(
                 value = authState.password,
@@ -45,7 +54,7 @@ fun AuthForm(
                 },
                 hint = "Password",
                 modifier = Modifier
-                    .fillMaxWidth(.7f)
+                    .fillMaxWidth(.6f)
             )
         }
     }

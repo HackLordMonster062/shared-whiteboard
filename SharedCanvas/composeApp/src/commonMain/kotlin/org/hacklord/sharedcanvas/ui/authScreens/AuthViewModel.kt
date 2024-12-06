@@ -13,7 +13,7 @@ import org.hacklord.sharedcanvas.domain.api.auth.AuthResult
 import org.hacklord.sharedcanvas.domain.repository.AuthRepository
 
 class AuthViewModel(
-    val authRepository: AuthRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     private var _state by mutableStateOf(AuthState())
     val state get() = _state

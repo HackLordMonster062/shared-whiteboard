@@ -42,6 +42,9 @@ kotlin {
 
             implementation(libs.retrofit)
             implementation(libs.multiplatform.settings)
+
+            implementation(libs.converter.moshi)
+            implementation(libs.multiplatform.settings.no.arg)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

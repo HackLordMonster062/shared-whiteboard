@@ -2,6 +2,9 @@ package org.hacklord.sharedcanvas
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import org.hacklord.sharedcanvas.ui.authScreens.AuthState
+import org.hacklord.sharedcanvas.ui.authScreens.AuthViewModel
+import org.hacklord.sharedcanvas.ui.authScreens.login.LoginScreen
 import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasScreen
 import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -12,10 +15,14 @@ import org.koin.compose.koinInject
 fun App() {
     MaterialTheme {
         //MainCanvas()
-        val viewModel = koinInject<CanvasViewModel>()
+        val viewModel = koinInject<AuthViewModel>()
 
-        CanvasScreen(
-            viewModel.canvasState,
+        LoginScreen(
+            authState = AuthState(
+                isLoading = false,
+                username = "",
+                password = ""
+            ),
             onEvent = viewModel::onEvent
         )
     }

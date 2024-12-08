@@ -20,6 +20,7 @@ fun App() {
 
             LoginScreen(
                 authState = viewModel.state,
+                authResults = viewModel.authResults,
                 onEvent = viewModel::onEvent
             )
         }

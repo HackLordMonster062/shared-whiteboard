@@ -1,25 +1,18 @@
 package org.hacklord.sharedcanvas.domain.api
 
+import io.ktor.client.statement.HttpResponse
 import org.hacklord.sharedcanvas.domain.api.auth.AuthRequest
-import org.hacklord.sharedcanvas.domain.api.auth.TokenResponse
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
 
 interface AuthAPI {
-    @POST("signup")
     suspend fun signUp(
-        @Body request: AuthRequest
-    )
+        request: AuthRequest
+    ): HttpResponse
 
-    @POST("login")
     suspend fun login(
-        @Body request: AuthRequest
-    ): TokenResponse
+        request: AuthRequest
+    ): HttpResponse
 
-    @GET("authenticate")
     suspend fun authenticate(
-        @Header("Authorization") token: String
-    )
+        token: String
+    ): HttpResponse
 }

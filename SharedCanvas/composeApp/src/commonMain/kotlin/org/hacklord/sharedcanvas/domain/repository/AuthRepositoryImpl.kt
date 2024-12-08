@@ -1,28 +1,28 @@
 package org.hacklord.sharedcanvas.domain.repository
 
 import com.russhwolf.settings.Settings
+import io.ktor.client.call.body
 import org.hacklord.sharedcanvas.domain.api.AuthAPI
 import org.hacklord.sharedcanvas.domain.api.auth.AuthRequest
 import org.hacklord.sharedcanvas.domain.api.auth.AuthResult
-import retrofit2.HttpException
+import org.hacklord.sharedcanvas.domain.api.auth.TokenResponse
 
 class AuthRepositoryImpl(
     val api: AuthAPI,
-    val settings: Settings
+    private val settings: Settings
 ) : AuthRepository {
     override suspend fun signUp(request: AuthRequest): AuthResult<Unit> {
         return try {
-            api.signUp(
+            val response = api.signUp(
                 request = request
             )
+
+            if (response.status.value in 400..499)
+                return AuthResult.Unauthorized()
+
             login(
                 request = request
             )
-        } catch (e: HttpException) {
-            if (e.code() == 401)
-                AuthResult.Unauthorized()
-            else
-                AuthResult.UnknownError()
         } catch (e: Exception) {
             AuthResult.UnknownError()
         }
@@ -32,15 +32,16 @@ class AuthRepositoryImpl(
         return try {
             val response = api.login(request)
 
-            settings.putString("jwt", response.token)
+            if (response.status.value in 400..499)
+                return AuthResult.Unauthorized()
+
+            val token: TokenResponse = response.body()
+
+            settings.putString("jwt", token.token)
 
             AuthResult.Authorized()
-        } catch (e: HttpException) {
-            if (e.code() == 401)
-                AuthResult.Unauthorized()
-            else
-                AuthResult.UnknownError()
         } catch (e: Exception) {
+            println(e)
             AuthResult.UnknownError()
         }
     }
@@ -48,13 +49,12 @@ class AuthRepositoryImpl(
     override suspend fun authenticate(): AuthResult<Unit> {
         return try {
             val token = settings.getStringOrNull("jwt") ?: return AuthResult.Unauthorized()
-            api.authenticate("Bearer $token")
+            val response = api.authenticate("Bearer $token")
+
+            if (response.status.value in 400..499)
+                return AuthResult.Unauthorized()
+
             AuthResult.Authorized()
-        } catch (e: HttpException) {
-            if (e.code() == 401)
-                AuthResult.Unauthorized()
-            else
-                AuthResult.UnknownError()
         } catch (e: Exception) {
             AuthResult.UnknownError()
         }

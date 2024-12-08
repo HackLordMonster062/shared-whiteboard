@@ -3,6 +3,8 @@ package org.hacklord.sharedcanvas
 import androidx.compose.ui.graphics.Color
 
 object AppConstants {
+    val URL = "http://127.0.0.1:1234/"
+
     val COLORS = listOf(
         Color.Black,
         Color.White,

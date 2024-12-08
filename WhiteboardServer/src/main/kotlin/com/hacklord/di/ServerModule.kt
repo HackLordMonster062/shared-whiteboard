@@ -15,8 +15,10 @@ import org.litote.kmongo.reactivestreams.KMongo
 
 val serverModule = module {
     val db = KMongo.createClient(
-        connectionString = "mongodb://localhost:27017"
-    ).coroutine.getDatabase("whiteboardDB")
+        connectionString = "mongodb+srv://hackmonster062:hacklord@cluster0.rxn6q.mongodb.net/"
+    ).coroutine.getDatabase("whiteboardDB").also {
+        println("Connected to database successfully.")
+    }
     single<UserDataSource> {
         UserDataSourceImpl(
             db

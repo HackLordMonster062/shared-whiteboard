@@ -6,7 +6,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import org.hacklord.sharedcanvas.ui.authScreens.AuthViewModel
-import org.hacklord.sharedcanvas.ui.authScreens.login.LoginScreen
+import org.hacklord.sharedcanvas.ui.authScreens.signup.SignupScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
@@ -18,7 +18,7 @@ fun App() {
             //MainCanvas()
             val viewModel = koinInject<AuthViewModel>()
 
-            LoginScreen(
+            SignupScreen(
                 authState = viewModel.state,
                 authResults = viewModel.authResults,
                 onEvent = viewModel::onEvent

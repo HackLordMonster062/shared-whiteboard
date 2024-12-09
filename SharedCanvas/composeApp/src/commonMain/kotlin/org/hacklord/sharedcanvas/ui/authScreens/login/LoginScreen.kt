@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.flow.Flow
 import org.hacklord.sharedcanvas.domain.api.auth.AuthResult
+import org.hacklord.sharedcanvas.ui.Route
 import org.hacklord.sharedcanvas.ui.authScreens.AuthEvent
 import org.hacklord.sharedcanvas.ui.authScreens.AuthState
 import org.hacklord.sharedcanvas.ui.authScreens.components.AuthForm
@@ -30,6 +31,7 @@ fun LoginScreen(
     authState: AuthState,
     authResults: Flow<AuthResult<Unit>>,
     onEvent: (event: AuthEvent) -> Unit,
+    onNavigate: (newRoute: Route) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -38,7 +40,7 @@ fun LoginScreen(
         authResults.collect { result ->
             when (result) {
                 is AuthResult.Authorized -> {
-                    //TODO: Navigate to lobby
+                    onNavigate(Route.Lobby)
                 }
                 is AuthResult.Unauthorized -> {
                     // Show error
@@ -87,7 +89,7 @@ fun LoginScreen(
                         interactionSource = interactionSource,
                         indication = null
                     ) {
-                        // Navigate to signup
+                        onNavigate(Route.Signup)
                     }
             )
         }

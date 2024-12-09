@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.hacklord.sharedcanvas.AppConstants
+import org.hacklord.sharedcanvas.ui.Route
 import org.hacklord.sharedcanvas.ui.canvas_screen.components.ColorItem
 import org.hacklord.sharedcanvas.ui.canvas_screen.components.DrawingCanvas
 import org.hacklord.sharedcanvas.ui.canvas_screen.components.EraserItem
@@ -21,7 +22,8 @@ import org.hacklord.sharedcanvas.ui.canvas_screen.components.WidthSlider
 @Composable
 fun CanvasScreen(
     state: CanvasState,
-    onEvent: (event: CanvasEvent) -> Unit
+    onEvent: (event: CanvasEvent) -> Unit,
+    onNavigate: (newRoute: Route) -> Unit
 ) {
     Column(
         //horizontalAlignment = Alignment.End

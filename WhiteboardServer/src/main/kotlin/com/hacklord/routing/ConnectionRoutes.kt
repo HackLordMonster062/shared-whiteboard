@@ -117,7 +117,7 @@ fun Route.connection(
 
                                 whiteboardDataSource.deleteWhiteboard(ObjectId(request.boardID))
 
-                                response = LobbyResponse.DeleteBoard()
+                                response = LobbyResponse.DeleteBoard
                             }
                         }
 
@@ -171,7 +171,7 @@ fun Route.connection(
                                         )
                                     )
 
-                                    response = WhiteboardResponse.EraseLine()
+                                    response = WhiteboardResponse.EraseLine
                                 } else {
                                     response = WhiteboardResponse.Error(
                                         message = "Invalid line ID"
@@ -185,7 +185,7 @@ fun Route.connection(
                                         message = "An error occurred"
                                     )
                                 } else {
-                                    response = WhiteboardResponse.ExitBoard()
+                                    response = WhiteboardResponse.ExitBoard
 
                                     onlineUser = UserManager.changeState(
                                         onlineUser,

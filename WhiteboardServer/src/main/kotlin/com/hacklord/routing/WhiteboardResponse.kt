@@ -1,30 +1,29 @@
 package com.hacklord.routing
 
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Polymorphic
 sealed interface WhiteboardResponse {
-    val code: Int
-
     @Serializable
+    @SerialName("200")
     data class DrawLine(
-        override val code: Int = 200,
         val lineId: Long
     ) : WhiteboardResponse
 
     @Serializable
-    data class EraseLine(
-        override val code: Int = 201,
-    ) : WhiteboardResponse
+    @SerialName("201")
+    data object EraseLine : WhiteboardResponse
 
     @Serializable
-    data class ExitBoard(
-        override val code: Int = 202
-    ) : WhiteboardResponse
+    @SerialName("202")
+    data object ExitBoard : WhiteboardResponse
 
     @Serializable
+    @SerialName("-1")
     data class Error(
-        override val code: Int = -1,
         val message: String
     ) : WhiteboardResponse
 }

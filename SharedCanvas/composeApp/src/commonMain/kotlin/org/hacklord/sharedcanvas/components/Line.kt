@@ -1,9 +1,10 @@
 package org.hacklord.sharedcanvas.components
 
-import androidx.compose.ui.graphics.Color
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Line(
-    val color: Color,
+    val color: Int,
     val width: Int,
     val vertices: List<Point> = listOf(),
     val id: Long? = null,

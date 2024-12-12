@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.hacklord.sharedcanvas.components.Line
-import org.hacklord.sharedcanvas.domain.event.CanvasAction
+import org.hacklord.sharedcanvas.domain.event.CanvasRequest
 import org.hacklord.sharedcanvas.domain.repository.CanvasRequestsRepository
 
 class CanvasViewModel(
@@ -19,6 +19,12 @@ class CanvasViewModel(
 
     init {
         _canvasState.lines.addAll(initLines)
+
+        viewModelScope.launch {
+            repository.getResponsesFlow().collect {
+
+            }
+        }
     }
 
     fun onEvent(event: CanvasEvent) {
@@ -34,7 +40,7 @@ class CanvasViewModel(
                     _canvasState.lines.add(newLine)
 
                     viewModelScope.launch {
-                        repository.sendRequest(CanvasAction.AddLine(newLine))
+                        repository.sendRequest(CanvasRequest.AddLine(newLine))
                         //TODO: Receive the new line's id
                     }
                 }
@@ -43,7 +49,7 @@ class CanvasViewModel(
                 _canvasState.lines.removeIf { it.id == event.id }
 
                 viewModelScope.launch {
-                    repository.sendRequest(CanvasAction.RemoveLine(event.id))
+                    repository.sendRequest(CanvasRequest.RemoveLine(event.id))
                 }
             }
             is CanvasEvent.SetColor -> {

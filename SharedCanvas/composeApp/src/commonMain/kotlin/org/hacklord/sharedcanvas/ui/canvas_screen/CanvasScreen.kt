@@ -42,14 +42,14 @@ fun CanvasScreen(
                 .padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AppConstants.COLORS.forEach { color ->
+            AppConstants.COLORS.forEachIndexed { index, color ->
                 ColorItem(
                     color,
                     state.drawingMode is DrawingMode.Draw &&
-                            state.drawingMode.color == color,
+                            state.drawingMode.color == index,
                     40.dp,
                     onClick = {
-                        onEvent(CanvasEvent.SetColor(color))
+                        onEvent(CanvasEvent.SetColor(index))
                     }
                 )
                 Spacer(Modifier.width(15.dp))

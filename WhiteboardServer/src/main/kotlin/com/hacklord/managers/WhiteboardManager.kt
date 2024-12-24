@@ -8,6 +8,7 @@ import com.hacklord.settings.ValidValues
 import io.ktor.websocket.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.util.*
 
 class WhiteboardManager(
     val info: Whiteboard,
@@ -16,8 +17,6 @@ class WhiteboardManager(
 
     val whitelist = info.userWhitelist.toMutableSet()
     private val lines = info.lines.toMutableList()
-
-    private var currId = info.currLineId
 
     fun connectUser(user: OnlineUser) {
         connectedUsers.add(user)
@@ -50,24 +49,20 @@ class WhiteboardManager(
         whitelist.remove(userId)
     }
 
-    fun drawLine(line: Line): Long? {
+    fun drawLine(line: Line) {
         if (!ValidValues.lineWidth.contains(line.width)) {
-            return null
+            return
         }
 
         if (!ValidValues.colors.contains(line.color)) {
-            return null
+            return
         }
 
-        val newLine = line.copy(id = currId++)
-
-        lines.add(newLine)
-
-        return newLine.id!!
+        lines.add(line)
     }
 
-    fun eraseLine(lineId: Long): Boolean {
-        val line = lines.find { it.id == lineId }
+    fun eraseLine(lineId: UUID): Boolean {
+        val line = lines.find { it.id == lineId.toString() }
 
         if (line == null) {
             return false
@@ -81,7 +76,6 @@ class WhiteboardManager(
     fun closeBoard(): Whiteboard {
         return info.copy(
             lines = lines,
-            currLineId = currId,
             userWhitelist = whitelist
         )
     }

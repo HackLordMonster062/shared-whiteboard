@@ -9,9 +9,7 @@ import kotlinx.serialization.Serializable
 sealed interface WhiteboardResponse {
     @Serializable
     @SerialName("200")
-    data class DrawLine(
-        val lineId: Long
-    ) : WhiteboardResponse
+    data object DrawLine : WhiteboardResponse
 
     @Serializable
     @SerialName("201")

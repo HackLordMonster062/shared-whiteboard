@@ -16,6 +16,6 @@ sealed interface WhiteboardBroadcast {
     @Serializable
     data class EraseBroadcast(
         override val code: Int = 251,
-        val lineID: Long
+        val lineID: String
     ) : WhiteboardBroadcast
 }

@@ -17,7 +17,7 @@ sealed interface WhiteboardRequest {
     @Serializable
     @SerialName("201")
     data class EraseLine(
-        val lineId: Long
+        val lineId: String
     ) : WhiteboardRequest
 
     @Serializable

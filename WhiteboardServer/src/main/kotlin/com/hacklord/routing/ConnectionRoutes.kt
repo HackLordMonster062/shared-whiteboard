@@ -14,6 +14,7 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.bson.types.ObjectId
+import java.util.*
 
 fun Route.connection(
     userDataSource: UserDataSource,
@@ -140,28 +141,22 @@ fun Route.connection(
 
                         when (request) {
                             is WhiteboardRequest.DrawLine -> {
-                                val id = manager.drawLine(request.line)
+                                manager.drawLine(request.line)
 
-                                if (id == null) {
-                                    response = WhiteboardResponse.Error(
-                                        message = "Invalid line"
+                                manager.broadcast(
+                                    onlineUser.user.id,
+                                    WhiteboardBroadcast.DrawBroadcast(
+                                        line = request.line
                                     )
-                                } else {
-                                    manager.broadcast(
-                                        onlineUser.user.id,
-                                        WhiteboardBroadcast.DrawBroadcast(
-                                            line = request.line
-                                        )
-                                    )
+                                )
 
-                                    response = WhiteboardResponse.DrawLine(
-                                        lineId = id
-                                    )
-                                }
+                                response = WhiteboardResponse.DrawLine
                             }
 
                             is WhiteboardRequest.EraseLine -> {
-                                val success = manager.eraseLine(request.lineId)
+                                val success = manager.eraseLine(
+                                    UUID.fromString(request.lineId)
+                                )
 
                                 if (success) {
                                     manager.broadcast(

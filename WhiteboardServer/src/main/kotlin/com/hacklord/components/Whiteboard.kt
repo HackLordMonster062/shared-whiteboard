@@ -10,6 +10,5 @@ data class Whiteboard(
     val creator: String,
     val userWhitelist: Set<String> = setOf(),
     val lines: List<Line> = listOf(),
-    val currLineId: Long = 0,
     @BsonId val id: String = ObjectId().toString(),
 )

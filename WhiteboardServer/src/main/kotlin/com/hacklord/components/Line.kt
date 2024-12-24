@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Line(
-    val id: Long?,
+    val id: String,
     val color: Int,
     val width: Int,
     val vertices: List<Point> = listOf(),

@@ -8,10 +8,12 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.hacklord.sharedcanvas.components.Line
 import org.hacklord.sharedcanvas.domain.event.CanvasRequest
-import org.hacklord.sharedcanvas.domain.repository.CanvasRequestsRepository
+import org.hacklord.sharedcanvas.domain.event.CanvasResponse
+import org.hacklord.sharedcanvas.domain.repository.RequestsRepository
+import java.util.UUID
 
 class CanvasViewModel(
-    private val repository: CanvasRequestsRepository,
+    private val repository: RequestsRepository<CanvasResponse, CanvasRequest>,
     initLines: List<Line>
 ) : ViewModel() {
     private var _canvasState by mutableStateOf(CanvasState())
@@ -21,7 +23,7 @@ class CanvasViewModel(
         _canvasState.lines.addAll(initLines)
 
         viewModelScope.launch {
-            repository.getResponsesFlow().collect {
+            repository.getResponsesFlow().collect { response ->
 
             }
         }
@@ -32,16 +34,16 @@ class CanvasViewModel(
             is CanvasEvent.AddLine -> {
                 if (_canvasState.drawingMode is DrawingMode.Draw) {
                     val newLine = Line(
-                        (_canvasState.drawingMode as DrawingMode.Draw).color,
-                        _canvasState.currWidth,
-                        event.line
+                        id = UUID.randomUUID().toString(),
+                        color = (_canvasState.drawingMode as DrawingMode.Draw).color,
+                        width = _canvasState.currWidth,
+                        vertices = event.line
                     )
 
                     _canvasState.lines.add(newLine)
 
                     viewModelScope.launch {
                         repository.sendRequest(CanvasRequest.AddLine(newLine))
-                        //TODO: Receive the new line's id
                     }
                 }
             }

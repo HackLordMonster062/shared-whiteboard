@@ -129,7 +129,7 @@ fun drawLine(
 
     drawScope.drawPath(
         path = path,
-        color = line.color,
+        color = AppConstants.COLORS[line.color],
         style = Stroke(
             width = AppConstants.WIDTHS[line.width].toFloat(),
             cap = StrokeCap.Round,

@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.hacklord.sharedcanvas.ui.Route
+import org.hacklord.sharedcanvas.ui.lobby_screen.components.BoardListItem
 import org.jetbrains.compose.resources.painterResource
 import sharedcanvas.composeapp.generated.resources.ExitIcon
 import sharedcanvas.composeapp.generated.resources.Logo
@@ -47,9 +48,13 @@ fun LobbyScreen(
 
         LazyColumn {
             for (i in 0..currState.boards.size step 3) {
-                Row {
-                    for (board in currState.boards.subList(i, min(i + 3, currState.boards.size))) {
-
+                item {
+                    Row {
+                        for (board in currState.boards.subList(i, min(i + 3, currState.boards.size))) {
+                            BoardListItem(
+                                board
+                            )
+                        }
                     }
                 }
             }

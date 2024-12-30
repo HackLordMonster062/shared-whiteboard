@@ -19,7 +19,7 @@ import kotlin.math.min
 
 @Composable
 fun LobbyScreen(
-    currState: LobbyState,
+    state: LobbyState,
     onEvent: (event: LobbyEvent) -> Unit,
     onNavigate: (newRoute: Route) -> Unit,
     modifier: Modifier = Modifier
@@ -47,10 +47,10 @@ fun LobbyScreen(
         )
 
         LazyColumn {
-            for (i in 0..currState.boards.size step 3) {
+            for (i in 0..state.boards.size step 3) {
                 item {
                     Row {
-                        for (board in currState.boards.subList(i, min(i + 3, currState.boards.size))) {
+                        for (board in state.boards.subList(i, min(i + 3, state.boards.size))) {
                             BoardListItem(
                                 board
                             )

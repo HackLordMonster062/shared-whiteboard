@@ -16,6 +16,8 @@ import org.hacklord.sharedcanvas.ui.authScreens.login.LoginScreen
 import org.hacklord.sharedcanvas.ui.authScreens.signup.SignupScreen
 import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasScreen
 import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasViewModel
+import org.hacklord.sharedcanvas.ui.lobby_screen.LobbyScreen
+import org.hacklord.sharedcanvas.ui.lobby_screen.LobbyViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -53,7 +55,13 @@ fun App() {
                         )
                     }
                     is Route.Lobby -> {
+                        val viewModel = koinViewModel<LobbyViewModel>()
 
+                        LobbyScreen(
+                            state = viewModel.lobbyState,
+                            onEvent = viewModel::onEvent,
+                            onNavigate = onNavigate
+                        )
                     }
                     is Route.Whiteboard -> {
                         val viewModel = koinViewModel<CanvasViewModel>()

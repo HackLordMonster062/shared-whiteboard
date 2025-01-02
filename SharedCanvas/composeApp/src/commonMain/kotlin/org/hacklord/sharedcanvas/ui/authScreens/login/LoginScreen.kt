@@ -40,7 +40,7 @@ fun LoginScreen(
         authResults.collect { result ->
             when (result) {
                 is AuthResult.Authorized -> {
-                    onNavigate(Route.Lobby)
+                    onNavigate(Route.Lobby.BoardList)
                 }
                 is AuthResult.Unauthorized -> {
                     // Show error

@@ -2,6 +2,7 @@ package org.hacklord.sharedcanvas.domain.repository
 
 import com.russhwolf.settings.Settings
 import io.ktor.client.call.body
+import kotlinx.serialization.json.Json
 import org.hacklord.sharedcanvas.domain.api.AuthAPI
 import org.hacklord.sharedcanvas.domain.api.auth.AuthRequest
 import org.hacklord.sharedcanvas.domain.api.auth.AuthResult
@@ -35,7 +36,7 @@ class AuthRepositoryImpl(
             if (response.status.value in 400..499)
                 return AuthResult.Unauthorized()
 
-            val token: TokenResponse = TokenResponse(response.body())
+            val token = Json.decodeFromString<TokenResponse>(response.body())
 
             settings.putString("jwt", token.token)
 

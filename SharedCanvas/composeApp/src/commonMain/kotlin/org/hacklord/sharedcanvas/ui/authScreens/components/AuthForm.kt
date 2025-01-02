@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.dp
 import org.hacklord.sharedcanvas.ui.authScreens.AuthEvent
 import org.hacklord.sharedcanvas.ui.authScreens.AuthState
 import org.jetbrains.compose.resources.painterResource
@@ -51,7 +53,7 @@ fun AuthForm(
                     bottom = maxHeight * .06f
                 )
         ) {
-            AuthFormField(
+            FormField(
                 value = authState.username,
                 onChange = { newValue ->
                     onEvent(AuthEvent.UsernameChanged(newValue))
@@ -60,7 +62,7 @@ fun AuthForm(
                 modifier = Modifier
                     .fillMaxWidth(.6f)
             )
-            AuthFormField(
+            FormField(
                 value = authState.password,
                 onChange = { newValue ->
                     onEvent(AuthEvent.PasswordChanged(newValue))
@@ -75,6 +77,7 @@ fun AuthForm(
                 painter = painterResource(Res.drawable.Submit),
                 contentDescription = null,
                 modifier = Modifier
+                    .width(150.dp)
                     .clickable(
                         interactionSource = interactionSource,
                         indication = null

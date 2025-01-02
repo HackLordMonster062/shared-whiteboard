@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.hacklord.sharedcanvas.domain.api.auth.AuthRequest
 import org.hacklord.sharedcanvas.domain.api.auth.AuthResult
+import org.hacklord.sharedcanvas.domain.manager.CommunicationManager
 import org.hacklord.sharedcanvas.domain.repository.AuthRepository
 
 class AuthViewModel(
@@ -46,6 +47,7 @@ class AuthViewModel(
                         password = _state.password
                     ))
 
+                    CommunicationManager.initialize()
                     _authResult.send(result)
 
                     _state = _state.copy(isLoading = false)
@@ -60,6 +62,7 @@ class AuthViewModel(
                         password = _state.password
                     ))
 
+                    CommunicationManager.initialize()
                     _authResult.send(result)
 
                     _state = _state.copy(isLoading = false)

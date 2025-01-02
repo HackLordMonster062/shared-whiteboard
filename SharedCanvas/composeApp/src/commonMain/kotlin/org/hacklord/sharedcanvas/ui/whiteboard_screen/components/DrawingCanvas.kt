@@ -1,4 +1,4 @@
-package org.hacklord.sharedcanvas.ui.canvas_screen.components
+package org.hacklord.sharedcanvas.ui.whiteboard_screen.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -22,15 +22,15 @@ import androidx.compose.ui.unit.dp
 import org.hacklord.sharedcanvas.AppConstants
 import org.hacklord.sharedcanvas.components.Line
 import org.hacklord.sharedcanvas.components.Point
-import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasEvent
-import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasState
-import org.hacklord.sharedcanvas.ui.canvas_screen.DrawingMode
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardEvent
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardState
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.DrawingMode
 import kotlin.math.sqrt
 
 @Composable
 fun DrawingCanvas(
-    canvasState: CanvasState,
-    onEvent: (CanvasEvent) -> Unit,
+    whiteboardState: WhiteboardState,
+    onEvent: (WhiteboardEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentLine by remember { mutableStateOf<List<Point>>(listOf()) }
@@ -42,8 +42,8 @@ fun DrawingCanvas(
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxSize()
-                .pointerInput(true, canvasState) {
-                    when (canvasState.drawingMode) {
+                .pointerInput(true, whiteboardState) {
+                    when (whiteboardState.drawingMode) {
                         is DrawingMode.Draw -> detectDragGestures(
                                 onDragStart = { offset ->
                                     currentLine = listOf(Point(offset.x, offset.y))
@@ -63,16 +63,16 @@ fun DrawingCanvas(
                                     }
                                 },
                                 onDragEnd = {
-                                    onEvent(CanvasEvent.AddLine(currentLine))
+                                    onEvent(WhiteboardEvent.AddLine(currentLine))
                                     currentLine = listOf()
                                 }
                             )
                         is DrawingMode.Erase -> detectDragGestures(
                                 onDrag = { change, _ ->
-                                    canvasState.lines.forEach { line ->
+                                    whiteboardState.lines.forEach { line ->
                                         line.vertices.forEach { point ->
                                             if (change.position.distanceTo(point) <= AppConstants.DRAWING_BUFFER) {
-                                                onEvent(CanvasEvent.RemoveLine(line.id!!))
+                                                onEvent(WhiteboardEvent.RemoveLine(line.id!!))
                                             }
                                         }
                                     }
@@ -81,14 +81,14 @@ fun DrawingCanvas(
                     }
                 }
         ) {
-            canvasState.lines.forEach { line ->
+            whiteboardState.lines.forEach { line ->
                 drawLine(line, this)
             }
 
-            if (currentLine.isNotEmpty() && canvasState.drawingMode is DrawingMode.Draw) {
+            if (currentLine.isNotEmpty() && whiteboardState.drawingMode is DrawingMode.Draw) {
                 val tempLine = Line(
-                    color = canvasState.drawingMode.color,
-                    width = canvasState.currWidth,
+                    color = whiteboardState.drawingMode.color,
+                    width = whiteboardState.currWidth,
                     vertices = currentLine
                 )
                 drawLine(tempLine, this)

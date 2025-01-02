@@ -1,4 +1,4 @@
-package org.hacklord.sharedcanvas.ui.canvas_screen
+package org.hacklord.sharedcanvas.ui.whiteboard_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -14,22 +14,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.hacklord.sharedcanvas.AppConstants
 import org.hacklord.sharedcanvas.ui.Route
-import org.hacklord.sharedcanvas.ui.canvas_screen.components.ColorItem
-import org.hacklord.sharedcanvas.ui.canvas_screen.components.DrawingCanvas
-import org.hacklord.sharedcanvas.ui.canvas_screen.components.EraserItem
-import org.hacklord.sharedcanvas.ui.canvas_screen.components.WidthSlider
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.components.ColorItem
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.components.DrawingCanvas
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.components.EraserItem
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.components.WidthSlider
 
 @Composable
-fun CanvasScreen(
-    state: CanvasState,
-    onEvent: (event: CanvasEvent) -> Unit,
+fun WhiteboardScreen(
+    state: WhiteboardState,
+    onEvent: (event: WhiteboardEvent) -> Unit,
     onNavigate: (newRoute: Route) -> Unit
 ) {
     Column(
         //horizontalAlignment = Alignment.End
     ) {
         DrawingCanvas(
-            canvasState = state,
+            whiteboardState = state,
             onEvent = onEvent,
             modifier = Modifier
                 .fillMaxWidth()
@@ -49,7 +49,7 @@ fun CanvasScreen(
                             state.drawingMode.color == index,
                     40.dp,
                     onClick = {
-                        onEvent(CanvasEvent.SetColor(index))
+                        onEvent(WhiteboardEvent.SetColor(index))
                     }
                 )
                 Spacer(Modifier.width(15.dp))
@@ -59,7 +59,7 @@ fun CanvasScreen(
                 isSelected = state.drawingMode is DrawingMode.Erase,
                 diameter = 40.dp,
                 onClick = {
-                    onEvent(CanvasEvent.SetEraser)
+                    onEvent(WhiteboardEvent.SetEraser)
                 }
             )
 
@@ -72,7 +72,7 @@ fun CanvasScreen(
                 value = state.currWidth,
                 steps = AppConstants.WIDTHS,
                 onChange = { newValue ->
-                    onEvent(CanvasEvent.SetWidth(
+                    onEvent(WhiteboardEvent.SetWidth(
                         newValue
                     ))
                 }

@@ -1,4 +1,4 @@
-package org.hacklord.sharedcanvas.ui.canvas_screen.components
+package org.hacklord.sharedcanvas.ui.whiteboard_screen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures

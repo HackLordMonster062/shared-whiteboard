@@ -18,7 +18,7 @@ import sharedcanvas.composeapp.generated.resources.GochiHand_Regular
 import sharedcanvas.composeapp.generated.resources.Res
 
 @Composable
-fun AuthFormField(
+fun FormField(
     value: String,
     onChange: (newValue: String) -> Unit,
     hint: String,

@@ -1,4 +1,4 @@
-package com.hacklord.routing
+package org.hacklord.sharedcanvas.domain.event
 
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName

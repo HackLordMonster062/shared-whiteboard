@@ -14,12 +14,14 @@ import org.hacklord.sharedcanvas.ui.Route
 import org.hacklord.sharedcanvas.ui.authScreens.AuthViewModel
 import org.hacklord.sharedcanvas.ui.authScreens.login.LoginScreen
 import org.hacklord.sharedcanvas.ui.authScreens.signup.SignupScreen
-import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasScreen
-import org.hacklord.sharedcanvas.ui.canvas_screen.CanvasViewModel
 import org.hacklord.sharedcanvas.ui.lobby_screen.LobbyScreen
 import org.hacklord.sharedcanvas.ui.lobby_screen.LobbyViewModel
+import org.hacklord.sharedcanvas.ui.lobby_screen.create_board_screen.CreateBoardScreen
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardScreen
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 @Preview
@@ -57,17 +59,28 @@ fun App() {
                     is Route.Lobby -> {
                         val viewModel = koinViewModel<LobbyViewModel>()
 
-                        LobbyScreen(
-                            state = viewModel.lobbyState,
-                            onEvent = viewModel::onEvent,
-                            onNavigate = onNavigate
-                        )
+                        when (currentState) {
+                            is Route.Lobby.BoardList -> LobbyScreen(
+                                state = viewModel.lobbyState,
+                                onEvent = viewModel::onEvent,
+                                onNavigate = onNavigate,
+                                uiEventFlow = viewModel.uiEvent
+                            )
+                            is Route.Lobby.CreateBoard -> CreateBoardScreen(
+                                state = viewModel.createBoardState,
+                                onEvent = viewModel::onEvent,
+                                onNavigate = onNavigate
+                            )
+                        }
+
                     }
                     is Route.Whiteboard -> {
-                        val viewModel = koinViewModel<CanvasViewModel>()
+                        val viewModel = koinViewModel<WhiteboardViewModel>(
+                            parameters = { parametersOf(currentState.board) }
+                        )
 
-                        CanvasScreen(
-                            state = viewModel.canvasState,
+                        WhiteboardScreen(
+                            state = viewModel.whiteboardState,
                             onEvent = viewModel::onEvent,
                             onNavigate = onNavigate
                         )

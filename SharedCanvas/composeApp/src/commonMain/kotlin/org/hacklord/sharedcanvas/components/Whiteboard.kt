@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Whiteboard(
     val name: String,
-    val creator: String,
+    val creator: String? = null,
     val userWhitelist: Set<String> = setOf(),
     val lines: List<Line> = listOf(),
     val currLineId: Long = 0,

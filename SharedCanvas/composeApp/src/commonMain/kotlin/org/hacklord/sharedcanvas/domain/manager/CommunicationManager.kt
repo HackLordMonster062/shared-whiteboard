@@ -21,11 +21,14 @@ object CommunicationManager {
         install(WebSockets)
     }
 
+    suspend fun initialize() {
+        session = client.webSocketSession {
+            url("ws://127.0.0.1:1234/connect")
+        }
+    }
+
     fun getResponsesFlow(): Flow<Frame.Text> {
         return flow {
-            session = client.webSocketSession {
-                url("ws://127.0.0.1:1234/connect")
-            }
             val responses = session!!
                 .incoming
                 .consumeAsFlow()

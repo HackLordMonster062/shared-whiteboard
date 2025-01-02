@@ -1,5 +1,6 @@
 package org.hacklord.sharedcanvas.ui.lobby_screen.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -9,9 +10,14 @@ import org.hacklord.sharedcanvas.components.Whiteboard
 @Composable
 fun BoardListItem(
     boardData: Whiteboard,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(
+        modifier = modifier.clickable {
+            onClick()
+        }
+    ) {
         Text(boardData.id)
         Text(boardData.name)
     }

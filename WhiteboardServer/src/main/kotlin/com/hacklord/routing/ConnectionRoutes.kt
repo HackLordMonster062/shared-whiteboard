@@ -29,6 +29,7 @@ fun Route.connection(
             for (frame in incoming) {
                 when (frame) {
                     is Frame.Text -> {
+                        println(frame.readText())
                         connectRequest = Json.decodeFromString<GeneralRequest.Connect>(frame.readText())
                         break
                     }

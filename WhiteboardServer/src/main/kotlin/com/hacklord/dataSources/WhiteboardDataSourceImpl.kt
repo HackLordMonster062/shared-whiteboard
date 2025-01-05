@@ -3,8 +3,10 @@ package com.hacklord.dataSources
 import com.hacklord.components.Whiteboard
 import com.hacklord.interfaces.WhiteboardDataSource
 import org.bson.types.ObjectId
+import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
+import org.litote.kmongo.or
 
 class WhiteboardDataSourceImpl(
     db: CoroutineDatabase
@@ -19,8 +21,10 @@ class WhiteboardDataSourceImpl(
         return boards.findOne(Whiteboard::id eq id.toString())
     }
 
-    override suspend fun getAllWhiteboards(): List<Whiteboard> {
-        return boards.find().toList()
+    override suspend fun getAllWhiteboardsOfUser(userId: String): List<Whiteboard> {
+        return boards.find(
+            or(Whiteboard::userWhitelist contains userId, Whiteboard::creator eq userId)
+        ).toList()
     }
 
     override suspend fun insertWhiteboard(board: Whiteboard): ObjectId? {

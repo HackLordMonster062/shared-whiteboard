@@ -12,6 +12,6 @@ data class Line(
 
 @Serializable
 data class Point(
-    val x: Int,
-    val y: Int,
+    val x: Float,
+    val y: Float,
 )

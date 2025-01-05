@@ -7,5 +7,7 @@ import org.hacklord.sharedcanvas.components.Line
 data class WhiteboardState(
     val drawingMode: DrawingMode = DrawingMode.Draw(0),
     val currWidth: Int = 2,
-    val lines: SnapshotStateList<Line> = mutableStateListOf()
+    val lines: SnapshotStateList<Line> = mutableStateListOf(),
+    val isAddUserMenuOpen: Boolean = false,
+    val currUsernameToAdd: String = ""
 )

@@ -1,12 +1,12 @@
 package org.hacklord.sharedcanvas.di
 
-import org.hacklord.sharedcanvas.domain.event.WhiteboardResponse
 import com.russhwolf.settings.Settings
 import org.hacklord.sharedcanvas.domain.api.AuthAPI
 import org.hacklord.sharedcanvas.domain.api.AuthAPIImpl
 import org.hacklord.sharedcanvas.domain.event.LobbyRequest
 import org.hacklord.sharedcanvas.domain.event.LobbyResponse
 import org.hacklord.sharedcanvas.domain.event.WhiteboardRequest
+import org.hacklord.sharedcanvas.domain.event.WhiteboardResponse
 import org.hacklord.sharedcanvas.domain.repository.AuthRepository
 import org.hacklord.sharedcanvas.domain.repository.AuthRepositoryImpl
 import org.hacklord.sharedcanvas.domain.repository.GeneralRequestsRepositoryImpl
@@ -16,14 +16,14 @@ import org.hacklord.sharedcanvas.domain.repository.WhiteboardRequestsRepositoryI
 import org.hacklord.sharedcanvas.ui.authScreens.AuthViewModel
 import org.hacklord.sharedcanvas.ui.lobby_screen.LobbyViewModel
 import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardViewModel
-import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val appModule = module {
-    single<RequestsRepository<WhiteboardResponse, WhiteboardRequest>> {
+    single<RequestsRepository<WhiteboardResponse, WhiteboardRequest>>(qualifier = named("WhiteboardRepo")) {
         WhiteboardRequestsRepositoryImpl()
     }
-    single<RequestsRepository<LobbyResponse, LobbyRequest>> {
+    single<RequestsRepository<LobbyResponse, LobbyRequest>>(qualifier = named("LobbyRepo")) {
         LobbyRequestsRepositoryImpl()
     }
     single<GeneralRequestsRepositoryImpl> {
@@ -41,20 +41,20 @@ val appModule = module {
             get()
         )
     }
-    viewModel { parameters ->
+    factory { parameters ->
         WhiteboardViewModel(
-            get(),
+            get(named("WhiteboardRepo")),
             parameters.get()
         )
     }
-    viewModel {
+    factory {
         LobbyViewModel(
-            get(),
+            get(named("LobbyRepo")),
             get(),
             get()
         )
     }
-    viewModel {
+    factory {
         AuthViewModel(
             get()
         )

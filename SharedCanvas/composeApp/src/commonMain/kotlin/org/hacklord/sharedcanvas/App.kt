@@ -20,7 +20,7 @@ import org.hacklord.sharedcanvas.ui.lobby_screen.create_board_screen.CreateBoard
 import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardScreen
 import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
 @Composable
@@ -37,7 +37,7 @@ fun App() {
             Crossfade(targetState = screen) { currentState ->
                 when (currentState) {
                     is Route.Login -> {
-                        val viewModel = koinViewModel<AuthViewModel>()
+                        val viewModel = koinInject<AuthViewModel>()
 
                         LoginScreen(
                             authState = viewModel.state,
@@ -47,7 +47,7 @@ fun App() {
                         )
                     }
                     is Route.Signup -> {
-                        val viewModel = koinViewModel<AuthViewModel>()
+                        val viewModel = koinInject<AuthViewModel>()
 
                         SignupScreen(
                             authState = viewModel.state,
@@ -57,32 +57,43 @@ fun App() {
                         )
                     }
                     is Route.Lobby -> {
-                        val viewModel = koinViewModel<LobbyViewModel>()
+                        val viewModel = koinInject<LobbyViewModel>()
+
+                        val lobbyOnNavigate = { route: Route ->
+                            onNavigate(route)
+                            viewModel.clear()
+                        }
 
                         when (currentState) {
                             is Route.Lobby.BoardList -> LobbyScreen(
                                 state = viewModel.lobbyState,
                                 onEvent = viewModel::onEvent,
-                                onNavigate = onNavigate,
+                                onNavigate = lobbyOnNavigate,
                                 uiEventFlow = viewModel.uiEvent
                             )
                             is Route.Lobby.CreateBoard -> CreateBoardScreen(
                                 state = viewModel.createBoardState,
                                 onEvent = viewModel::onEvent,
-                                onNavigate = onNavigate
+                                onNavigate = lobbyOnNavigate
                             )
                         }
 
                     }
                     is Route.Whiteboard -> {
-                        val viewModel = koinViewModel<WhiteboardViewModel>(
+                        val viewModel = koinInject<WhiteboardViewModel>(
                             parameters = { parametersOf(currentState.board) }
                         )
+
+                        val whiteboardOnNavigate = { route: Route ->
+                            onNavigate(route)
+                            viewModel.clear()
+                        }
 
                         WhiteboardScreen(
                             state = viewModel.whiteboardState,
                             onEvent = viewModel::onEvent,
-                            onNavigate = onNavigate
+                            onNavigate = whiteboardOnNavigate,
+                            uiEventFlow = viewModel.uiEvent
                         )
                     }
                 }

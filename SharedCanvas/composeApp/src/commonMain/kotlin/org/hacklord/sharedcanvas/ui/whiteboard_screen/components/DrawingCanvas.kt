@@ -22,9 +22,9 @@ import androidx.compose.ui.unit.dp
 import org.hacklord.sharedcanvas.AppConstants
 import org.hacklord.sharedcanvas.components.Line
 import org.hacklord.sharedcanvas.components.Point
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.DrawingMode
 import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardEvent
 import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardState
-import org.hacklord.sharedcanvas.ui.whiteboard_screen.DrawingMode
 import kotlin.math.sqrt
 
 @Composable
@@ -69,10 +69,10 @@ fun DrawingCanvas(
                             )
                         is DrawingMode.Erase -> detectDragGestures(
                                 onDrag = { change, _ ->
-                                    whiteboardState.lines.forEach { line ->
+                                    whiteboardState.lines.toList().forEach { line ->
                                         line.vertices.forEach { point ->
                                             if (change.position.distanceTo(point) <= AppConstants.DRAWING_BUFFER) {
-                                                onEvent(WhiteboardEvent.RemoveLine(line.id!!))
+                                                onEvent(WhiteboardEvent.RemoveLine(line.id))
                                             }
                                         }
                                     }

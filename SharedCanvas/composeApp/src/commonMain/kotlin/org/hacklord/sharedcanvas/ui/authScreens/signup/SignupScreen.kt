@@ -40,6 +40,7 @@ fun SignupScreen(
         authResults.collect { result ->
             when (result) {
                 is AuthResult.Authorized -> {
+                    onEvent(AuthEvent.Connect)
                     onNavigate(Route.Lobby.BoardList)
                 }
                 is AuthResult.Unauthorized -> {

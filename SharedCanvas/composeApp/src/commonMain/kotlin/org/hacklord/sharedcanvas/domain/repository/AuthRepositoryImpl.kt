@@ -52,6 +52,8 @@ class AuthRepositoryImpl(
             val token = settings.getStringOrNull("jwt") ?: return AuthResult.Unauthorized()
             val response = api.authenticate("Bearer $token")
 
+            println(token)
+
             if (response.status.value in 400..499)
                 return AuthResult.Unauthorized()
 

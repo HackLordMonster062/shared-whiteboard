@@ -49,13 +49,13 @@ val appModule = module {
     }
     factory {
         LobbyViewModel(
-            get(named("LobbyRepo")),
-            get(),
-            get()
+            get(named("LobbyRepo"))
         )
     }
     factory {
         AuthViewModel(
+            get(),
+            get(),
             get()
         )
     }

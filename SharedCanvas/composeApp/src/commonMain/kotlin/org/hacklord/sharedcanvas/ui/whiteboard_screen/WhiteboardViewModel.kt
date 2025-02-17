@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -28,16 +27,19 @@ class WhiteboardViewModel(
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val job: Job
+    private val job = viewModelScope.launch {
+        repository.getResponsesFlow().collect { response ->
+            when (response) {
+                is WhiteboardResponse.ExitBoard -> {
+                    _uiEvent.send(UiEvent.Navigate(Route.Lobby.BoardList))
+                }
+                else -> {}
+            }
+        }
+    }
 
     init {
         _whiteboardState.lines.addAll(initInfo.lines)
-
-        job = viewModelScope.launch {
-            repository.getResponsesFlow().collect { response ->
-                println(response)
-            }
-        }
     }
 
     fun clear() {
@@ -49,7 +51,6 @@ class WhiteboardViewModel(
             is WhiteboardEvent.Exit -> {
                 viewModelScope.launch {
                     repository.sendRequest(WhiteboardRequest.ExitBoard)
-                    _uiEvent.send(UiEvent.Navigate(Route.Lobby.BoardList))
                 }
             }
             is WhiteboardEvent.AddLine -> {

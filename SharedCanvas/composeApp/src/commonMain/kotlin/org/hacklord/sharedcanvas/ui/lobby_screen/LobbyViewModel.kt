@@ -19,9 +19,7 @@ import org.hacklord.sharedcanvas.ui.UiEvent
 import org.hacklord.sharedcanvas.ui.lobby_screen.create_board_screen.CreateBoardState
 
 class LobbyViewModel(
-    private val repository: RequestsRepository<LobbyResponse, LobbyRequest>,
-    generalRepository: GeneralRequestsRepositoryImpl,
-    settings: Settings
+    private val repository: RequestsRepository<LobbyResponse, LobbyRequest>
 ) : ViewModel() {
     private var _lobbyState by mutableStateOf(LobbyState())
     val lobbyState get() = _lobbyState
@@ -33,11 +31,6 @@ class LobbyViewModel(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private val job: Job = viewModelScope.launch {
-        println("Starting Lobby: Sending token...")
-        val token = settings.getString("jwt", "")
-
-        generalRepository.sendAuthenticate(token)
-
         repository.sendRequest(LobbyRequest.GetWhiteboards)
 
         repository.getResponsesFlow().collect { response ->

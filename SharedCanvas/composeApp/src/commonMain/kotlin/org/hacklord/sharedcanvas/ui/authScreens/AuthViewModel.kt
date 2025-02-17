@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.russhwolf.settings.Settings
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -12,9 +13,12 @@ import org.hacklord.sharedcanvas.domain.api.auth.AuthRequest
 import org.hacklord.sharedcanvas.domain.api.auth.AuthResult
 import org.hacklord.sharedcanvas.domain.manager.CommunicationManager
 import org.hacklord.sharedcanvas.domain.repository.AuthRepository
+import org.hacklord.sharedcanvas.domain.repository.GeneralRequestsRepositoryImpl
 
 class AuthViewModel(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val generalRepository: GeneralRequestsRepositoryImpl,
+    private val settings: Settings
 ) : ViewModel() {
     private var _state by mutableStateOf(AuthState())
     val state get() = _state
@@ -68,6 +72,13 @@ class AuthViewModel(
                     _state = _state.copy(isLoading = false)
                 }
             }
+            is AuthEvent.Connect -> {
+                val token = settings.getString("jwt", "")
+
+                viewModelScope.launch {
+                    generalRepository.sendAuthenticate(token)
+                }
+            }
         }
     }
 
@@ -77,6 +88,7 @@ class AuthViewModel(
 
             val result = authRepository.authenticate()
 
+            CommunicationManager.initialize()
             _authResult.send(result)
 
             _state = _state.copy(isLoading = false)

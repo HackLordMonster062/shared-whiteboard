@@ -60,8 +60,9 @@ fun App() {
                         val viewModel = koinInject<LobbyViewModel>()
 
                         val lobbyOnNavigate = { route: Route ->
-                            onNavigate(route)
+                            println("clear")
                             viewModel.clear()
+                            onNavigate(route)
                         }
 
                         when (currentState) {

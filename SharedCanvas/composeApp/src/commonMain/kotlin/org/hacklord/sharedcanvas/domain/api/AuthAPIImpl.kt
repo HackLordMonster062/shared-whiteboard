@@ -37,7 +37,7 @@ class AuthAPIImpl : AuthAPI {
     override suspend fun authenticate(token: String): HttpResponse {
         return client.get(AppConstants.URL + "authenticate") {
             headers {
-                append("Authenticate", token)
+                append("Authorization", token)
             }
         }
     }

@@ -10,7 +10,7 @@ import com.hacklord.managers.UserManager
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.bson.types.ObjectId
@@ -61,7 +61,7 @@ fun Route.connection(
         var onlineUser = UserManager.connectUser(user, this)
 
         try {
-            incoming.consumeEach {
+            incoming.consumeAsFlow().collect {
                 if (it is Frame.Text) {
                     when (onlineUser.state) {
                         is OnlineUserState.InLobby -> {
@@ -71,6 +71,8 @@ fun Route.connection(
                                 serializersModule = lobbyRequestModule
                                 classDiscriminator = "code"
                             }
+
+                            println(it.readText())
 
                             when (val request = json.decodeFromString<LobbyRequest>(it.readText())) {
                                 is LobbyRequest.GetWhiteboards -> {
@@ -146,6 +148,8 @@ fun Route.connection(
                             val manager = onlineBoardsManager.onlineBoards[userState.boardId]!!
 
                             var response: WhiteboardResponse? = null
+
+                            println(request)
 
                             when (request) {
                                 is WhiteboardRequest.DrawLine -> {
@@ -228,6 +232,8 @@ fun Route.connection(
                                 }
                             }
 
+                            println(Json.encodeToString(response))
+
                             if (response != null)
                                 send(
                                     Frame.Text(
@@ -246,8 +252,11 @@ fun Route.connection(
             when (val state = onlineUser.state) {
                 is OnlineUserState.InWhiteboard -> {
                     onlineBoardsManager.disconnectUser(onlineUser.user.id, state.boardId)
+                    println("Disconnected user: ${onlineUser.user}")
                 }
-                else -> {}
+                else -> {
+                    println("Disconnected user: ${onlineUser.user}")
+                }
             }
         }
     }

@@ -3,6 +3,7 @@ package org.hacklord.sharedcanvas.domain.repository
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -15,6 +16,7 @@ class LobbyRequestsRepositoryImpl : RequestsRepository<LobbyResponse, LobbyReque
     override fun getResponsesFlow(): Flow<LobbyResponse> {
         return CommunicationManager.getResponsesFlow()
             .mapNotNull { Json.decodeFromString<LobbyResponse>(it.readText()) }
+            .cancellable()
     }
 
     override suspend fun sendRequest(request: LobbyRequest) {

@@ -27,7 +27,10 @@ class AuthViewModel(
     val authResults = _authResult.receiveAsFlow()
 
     init {
-        authenticate()
+        if (!AuthInfo.hasSentAuthenticate) {
+            authenticate()
+            AuthInfo.hasSentAuthenticate = true
+        }
     }
 
     fun onEvent(event: AuthEvent) {

@@ -6,4 +6,8 @@ import kotlinx.serialization.Serializable
 data class Point(
     val x: Float,
     val y: Float
-)
+) {
+    operator fun times(b: Float): Point {
+        return Point(x * b, y * b)
+    }
+}

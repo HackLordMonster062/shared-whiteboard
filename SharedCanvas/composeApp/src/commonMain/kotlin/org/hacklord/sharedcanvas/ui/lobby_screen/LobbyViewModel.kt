@@ -5,14 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.russhwolf.settings.Settings
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.hacklord.sharedcanvas.domain.event.LobbyRequest
 import org.hacklord.sharedcanvas.domain.event.LobbyResponse
-import org.hacklord.sharedcanvas.domain.repository.GeneralRequestsRepositoryImpl
+import org.hacklord.sharedcanvas.domain.manager.CommunicationManager
 import org.hacklord.sharedcanvas.domain.repository.RequestsRepository
 import org.hacklord.sharedcanvas.ui.Route
 import org.hacklord.sharedcanvas.ui.UiEvent
@@ -34,12 +33,15 @@ class LobbyViewModel(
         repository.sendRequest(LobbyRequest.GetWhiteboards)
 
         repository.getResponsesFlow().collect { response ->
+            println(response)
+
             when (response) {
                 is LobbyResponse.BoardList -> {
                     println("Received boards")
                     _lobbyState.boards.clear()
                     _lobbyState.boards.addAll(response.boards)
                 }
+
                 is LobbyResponse.EnterBoard -> {
                     _uiEvent.send(
                         UiEvent.Navigate(
@@ -47,10 +49,12 @@ class LobbyViewModel(
                         )
                     )
                 }
+
                 is LobbyResponse.Error -> {
                     // TODO: Handle errors
                 }
-                else -> { }
+
+                else -> {}
             }
         }
     }
@@ -68,7 +72,7 @@ class LobbyViewModel(
             }
             is LobbyEvent.Logout -> {
                 viewModelScope.launch {
-                    // Log out
+                    CommunicationManager.close()
                 }
             }
             is LobbyEvent.WhiteboardNameChanged -> {

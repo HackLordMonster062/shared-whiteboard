@@ -50,6 +50,7 @@ object CommunicationManager {
 
     suspend fun close() {
         session?.close()
+        _responseFlow = null
         session = null
     }
 }

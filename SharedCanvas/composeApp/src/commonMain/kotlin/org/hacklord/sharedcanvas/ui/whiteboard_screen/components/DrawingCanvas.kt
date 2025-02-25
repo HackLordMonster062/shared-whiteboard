@@ -113,14 +113,15 @@ fun Offset.distanceTo(other: Point): Float {
 
 fun drawLine(
     line: Line,
-    drawScope: DrawScope
+    drawScope: DrawScope,
+    scale: Float = 1f
 ) {
     val path = Path().apply {
         if (line.vertices.isNotEmpty()) {
-            moveTo(line.vertices.first().x, line.vertices.first().y)
+            moveTo(line.vertices.first().x * scale, line.vertices.first().y * scale)
             for (i in 1 until line.vertices.size) {
-                val prev = line.vertices[i - 1]
-                val curr = line.vertices[i]
+                val prev = line.vertices[i - 1] * scale
+                val curr = line.vertices[i] * scale
                 val midPoint = Point((prev.x + curr.x) / 2, (prev.y + curr.y) / 2)
                 quadraticBezierTo(prev.x, prev.y, midPoint.x, midPoint.y)
             }
@@ -131,7 +132,7 @@ fun drawLine(
         path = path,
         color = AppConstants.COLORS[line.color],
         style = Stroke(
-            width = AppConstants.WIDTHS[line.width].toFloat(),
+            width = AppConstants.WIDTHS[line.width].toFloat() * scale,
             cap = StrokeCap.Round,
             join = StrokeJoin.Round
         )

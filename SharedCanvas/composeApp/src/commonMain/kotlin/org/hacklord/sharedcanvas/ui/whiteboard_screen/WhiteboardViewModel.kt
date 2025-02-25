@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.hacklord.sharedcanvas.components.Line
 import org.hacklord.sharedcanvas.components.Whiteboard
+import org.hacklord.sharedcanvas.domain.event.WhiteboardBroadcast
 import org.hacklord.sharedcanvas.domain.event.WhiteboardRequest
 import org.hacklord.sharedcanvas.domain.event.WhiteboardResponse
 import org.hacklord.sharedcanvas.domain.repository.RequestsRepository
@@ -32,6 +33,12 @@ class WhiteboardViewModel(
             when (response) {
                 is WhiteboardResponse.ExitBoard -> {
                     _uiEvent.send(UiEvent.Navigate(Route.Lobby.BoardList))
+                }
+                is WhiteboardBroadcast.DrawBroadcast -> {
+                    _whiteboardState.lines.add(response.line)
+                }
+                is WhiteboardBroadcast.EraseBroadcast -> {
+                    eraseLine(response.lineID)
                 }
                 else -> {}
             }
@@ -70,12 +77,7 @@ class WhiteboardViewModel(
                 }
             }
             is WhiteboardEvent.RemoveLine -> {
-                for (i in _whiteboardState.lines.indices) {
-                    if (_whiteboardState.lines[i].id == event.id) {
-                        _whiteboardState.lines.removeAt(i)
-                        break
-                    }
-                }
+                eraseLine(event.id)
 
                 viewModelScope.launch {
                     repository.sendRequest(WhiteboardRequest.EraseLine(event.id))
@@ -105,6 +107,15 @@ class WhiteboardViewModel(
                 viewModelScope.launch {
                     repository.sendRequest(WhiteboardRequest.AddUser(event.username))
                 }
+            }
+        }
+    }
+
+    fun eraseLine(id: String) {
+        for (i in _whiteboardState.lines.indices) {
+            if (_whiteboardState.lines[i].id == id) {
+                _whiteboardState.lines.removeAt(i)
+                break
             }
         }
     }

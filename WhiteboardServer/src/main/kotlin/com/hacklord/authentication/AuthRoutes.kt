@@ -89,11 +89,12 @@ fun Route.login(
 
 
 fun Route.authenticate() {
-    authenticate {
+    println(authenticate {
         get("authenticate") {
+            println(call.pathParameters)
             call.respond(HttpStatusCode.OK)
         }
-    }
+    })
 }
 
 fun Route.getSecretInfo() {

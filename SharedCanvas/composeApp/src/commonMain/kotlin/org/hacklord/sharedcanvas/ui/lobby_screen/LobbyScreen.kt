@@ -107,7 +107,9 @@ fun LobbyScreen(
                                 board,
                                 onClick = {
                                     onEvent(LobbyEvent.EnterWhiteboard(board.id))
-                                }
+                                },
+                                modifier = Modifier
+                                    .width(200.dp)
                             )
                         }
                     }

@@ -57,6 +57,13 @@ kotlin {
     }
 }
 
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "org.hacklord.sharedcanvas.MainKt" // Replace with your main class
+    }
+}
+
+
 compose.resources {
     publicResClass = false
     generateResClass = auto

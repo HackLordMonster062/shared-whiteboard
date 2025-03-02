@@ -11,12 +11,18 @@ import kotlinx.serialization.json.Json
 import java.util.*
 
 class WhiteboardManager(
-    val info: Whiteboard,
+    private val info: Whiteboard,
 ) {
     val connectedUsers: MutableList<OnlineUser> = mutableListOf()
 
     val whitelist = info.userWhitelist.toMutableSet()
-    private val lines = info.lines.toMutableList()
+    private val _lines = info.lines.toMutableList()
+
+    val id get() = info.id
+
+    fun getBoardInfo(): Whiteboard {
+        return info.copy(lines = _lines.toList())
+    }
 
     fun connectUser(user: OnlineUser) {
         connectedUsers.add(user)
@@ -58,24 +64,24 @@ class WhiteboardManager(
             return
         }
 
-        lines.add(line)
+        _lines.add(line)
     }
 
     fun eraseLine(lineId: UUID): Boolean {
-        val line = lines.find { it.id == lineId.toString() }
+        val line = _lines.find { it.id == lineId.toString() }
 
         if (line == null) {
             return false
         }
 
-        lines.remove(line)
+        _lines.remove(line)
 
         return true
     }
 
     fun closeBoard(): Whiteboard {
         return info.copy(
-            lines = lines,
+            lines = _lines,
             userWhitelist = whitelist
         )
     }

@@ -3,6 +3,7 @@ package com.hacklord.routing
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.hacklord.components.OnlineUserState
+import com.hacklord.components.Whiteboard
 import com.hacklord.interfaces.UserDataSource
 import com.hacklord.interfaces.WhiteboardDataSource
 import com.hacklord.managers.OnlineBoardsManager
@@ -76,7 +77,17 @@ fun Route.connection(
 
                             when (val request = json.decodeFromString<LobbyRequest>(it.readText())) {
                                 is LobbyRequest.GetWhiteboards -> {
-                                    val boards = whiteboardDataSource.getAllWhiteboardsOfUser(onlineUser.user.id)
+                                    val dbBoards = whiteboardDataSource.getAllWhiteboardsOfUser(onlineUser.user.id)
+
+                                    val boards = mutableListOf<Whiteboard>()
+
+                                    dbBoards.forEach { board ->
+                                        val onlineBoard = onlineBoardsManager.onlineBoards[board.id]
+
+                                        boards.add(
+                                            onlineBoard?.getBoardInfo() ?: board
+                                        )
+                                    }
 
                                     response = LobbyResponse.BoardList(boards = boards)
                                 }
@@ -89,7 +100,7 @@ fun Route.connection(
                                         )
 
                                         LobbyResponse.EnterBoard(
-                                            boardInfo = onlineBoardsManager.onlineBoards[request.boardID]!!.info
+                                            boardInfo = onlineBoardsManager.onlineBoards[request.boardID]!!.getBoardInfo()
                                         )
                                     } else {
                                         LobbyResponse.Error(
@@ -115,7 +126,7 @@ fun Route.connection(
                                     )
 
                                     response = LobbyResponse.EnterBoard(
-                                        boardInfo = onlineBoardsManager.onlineBoards[boardID]!!.info
+                                        boardInfo = onlineBoardsManager.onlineBoards[boardID]!!.getBoardInfo()
                                     )
                                 }
 
@@ -128,6 +139,8 @@ fun Route.connection(
                                     response = LobbyResponse.DeleteBoard
                                 }
                             }
+
+                            println(Json.encodeToString(response))
 
                             send(
                                 Frame.Text(
@@ -251,13 +264,22 @@ fun Route.connection(
         } finally {
             when (val state = onlineUser.state) {
                 is OnlineUserState.InWhiteboard -> {
-                    onlineBoardsManager.disconnectUser(onlineUser.user.id, state.boardId)
-                    println("Disconnected user: ${onlineUser.user}")
+                    if (!onlineBoardsManager.disconnectUser(onlineUser.user.id, state.boardId)) {
+                        println("An error occurred while disconnecting user: ${onlineUser.user}")
+                    }
                 }
-                else -> {
-                    println("Disconnected user: ${onlineUser.user}")
-                }
+                else -> {}
             }
+
+            if (!UserManager.disconnectUser(userId)) {
+                println("An error occurred while disconnecting user: ${onlineUser.user}")
+            }
+
+            println("Disconnected user: ${onlineUser.user}")
         }
     }
+}
+
+fun getWhiteboardInfo(boardID: String) {
+
 }

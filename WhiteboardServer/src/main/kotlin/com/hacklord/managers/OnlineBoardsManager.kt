@@ -20,7 +20,7 @@ class OnlineBoardsManager(
 
         val manager = WhiteboardManager(board)
 
-        onlineBoards[manager.info.id] = manager
+        onlineBoards[manager.id] = manager
 
         return manager
     }
@@ -53,7 +53,7 @@ class OnlineBoardsManager(
     suspend fun connectUser(user: OnlineUser, boardID: String): Boolean {
         val board = onlineBoards[boardID] ?: openWhiteboard(boardID)
 
-        if (board.info.creator == user.user.id || board.whitelist.contains(user.user.id)) {
+        if (board.getBoardInfo().creator == user.user.id || board.whitelist.contains(user.user.id)) {
             board.connectUser(onlineUsers[user.user.id]!!)
 
             return true

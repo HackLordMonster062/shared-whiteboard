@@ -30,4 +30,8 @@ object UserManager {
 
         return newUser
     }
+
+    fun disconnectUser(userID: String): Boolean {
+        return onlineUsers.remove(userID) != null
+    }
 }

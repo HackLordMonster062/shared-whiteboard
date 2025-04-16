@@ -6,4 +6,5 @@ sealed interface AuthEvent {
     data object Login : AuthEvent
     data object Signup : AuthEvent
     data object Connect : AuthEvent
+    data object SwitchField : AuthEvent
 }

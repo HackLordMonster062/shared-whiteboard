@@ -26,12 +26,18 @@ sealed interface WhiteboardRequest {
 
     @Serializable
     @SerialName("220")
-    data class AddUser(
-        val username: String
+    data class SearchUsers(
+        val name: String
     ) : WhiteboardRequest
 
     @Serializable
     @SerialName("221")
+    data class AddUser(
+        val id: String
+    ) : WhiteboardRequest
+
+    @Serializable
+    @SerialName("222")
     data class RemoveUser(
         val username: String
     ) : WhiteboardRequest

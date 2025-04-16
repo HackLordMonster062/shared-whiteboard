@@ -7,6 +7,8 @@ import com.hacklord.components.auth.JwtTokenService
 import com.hacklord.components.auth.TokenClaim
 import com.hacklord.config.TokenConfig
 import com.hacklord.interfaces.UserDataSource
+import com.hacklord.security.HashingService
+import com.hacklord.security.SaltedHash
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -15,7 +17,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.signup(
-    userDataSource: UserDataSource
+    userDataSource: UserDataSource,
+    hashingService: HashingService
 ) {
     post("signup") {
         val request = call.receiveNullable<AuthRequest>() ?: run {
@@ -31,9 +34,12 @@ fun Route.signup(
             return@post
         }
 
+        val saltedHash = hashingService.generateSaltedHash(request.password)
+
         val user = User(
             request.username,
-            request.password, // TODO: Hash
+            saltedHash.hash,
+            saltedHash.salt
         )
 
         val userId = userDataSource.insertUser(user)
@@ -49,6 +55,7 @@ fun Route.signup(
 
 fun Route.login(
     userDataSource: UserDataSource,
+    hashingService: HashingService,
     tokenService: JwtTokenService,
     config: TokenConfig
 ) {
@@ -63,7 +70,13 @@ fun Route.login(
             return@post
         }
 
-        val invalidPassword = user.password == request.password // TODO: check hash
+        val invalidPassword = hashingService.verify(
+            value = request.password,
+            saltedHash = SaltedHash(
+                hash = user.password,
+                salt = user.salt
+            )
+        )
 
         if (!invalidPassword) {
             call.respond(HttpStatusCode.Conflict)

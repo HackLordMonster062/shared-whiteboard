@@ -22,7 +22,7 @@ fun FormField(
     value: String,
     onChange: (newValue: String) -> Unit,
     hint: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val fontFamily = FontFamily(Font(Res.font.GochiHand_Regular))
 
@@ -47,7 +47,7 @@ fun FormField(
 
                 innerTextField()
             } },
-            visualTransformation = VisualTransformation.None,
+            visualTransformation = VisualTransformation.None
         )
 
         Image(

@@ -115,8 +115,12 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.hacklord.sharedcanvas"
+            packageName = "SketchHub"
             packageVersion = "1.0.0"
+
+            windows {
+                iconFile.set(project.file("src\\commonMain\\composeResources\\drawable\\Icon.ico"))
+            }
         }
     }
 }

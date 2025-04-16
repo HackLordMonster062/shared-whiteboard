@@ -15,7 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.hacklord.sharedcanvas.ui.authScreens.AuthEvent
 import org.hacklord.sharedcanvas.ui.authScreens.AuthState
@@ -32,6 +34,8 @@ fun AuthForm(
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val focusRequesters = remember { List(2) { FocusRequester() } }
+    val focusManager = LocalFocusManager.current
 
     BoxWithConstraints(
         modifier = modifier

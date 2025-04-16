@@ -4,19 +4,20 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import org.hacklord.sharedcanvas.domain.manager.CommunicationManager
 import org.hacklord.sharedcanvas.ui.Route
 import org.hacklord.sharedcanvas.ui.authScreens.AuthViewModel
 import org.hacklord.sharedcanvas.ui.authScreens.login.LoginScreen
 import org.hacklord.sharedcanvas.ui.authScreens.signup.SignupScreen
 import org.hacklord.sharedcanvas.ui.lobby_screen.LobbyScreen
 import org.hacklord.sharedcanvas.ui.lobby_screen.LobbyViewModel
-import org.hacklord.sharedcanvas.ui.lobby_screen.create_board_screen.CreateBoardScreen
 import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardScreen
 import org.hacklord.sharedcanvas.ui.whiteboard_screen.WhiteboardViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -32,6 +33,12 @@ fun App() {
 
             val onNavigate: (newRoute: Route) -> Unit = { newRoute ->
                 screen = newRoute
+            }
+
+            LaunchedEffect(true) {
+                CommunicationManager.onConnectionClosed = {
+                    onNavigate(Route.Login)
+                }
             }
 
             Crossfade(targetState = screen) { currentState ->
@@ -65,20 +72,13 @@ fun App() {
                             onNavigate(route)
                         }
 
-                        when (currentState) {
-                            is Route.Lobby.BoardList -> LobbyScreen(
-                                state = viewModel.lobbyState,
-                                onEvent = viewModel::onEvent,
-                                onNavigate = lobbyOnNavigate,
-                                uiEventFlow = viewModel.uiEvent
-                            )
-                            is Route.Lobby.CreateBoard -> CreateBoardScreen(
-                                state = viewModel.createBoardState,
-                                onEvent = viewModel::onEvent,
-                                onNavigate = lobbyOnNavigate
-                            )
-                        }
-
+                        LobbyScreen(
+                            state = viewModel.lobbyState,
+                            createBoardState = viewModel.createBoardState,
+                            onEvent = viewModel::onEvent,
+                            onNavigate = lobbyOnNavigate,
+                            uiEventFlow = viewModel.uiEvent
+                        )
                     }
                     is Route.Whiteboard -> {
                         val viewModel = koinInject<WhiteboardViewModel>(

@@ -15,10 +15,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 
 object CommunicationManager {
     var session: WebSocketSession? = null
+    var onConnectionClosed: (() -> Unit)? = null
 
     private var _responseFlow: Flow<Frame.Text>? = null
 
@@ -44,6 +46,11 @@ object CommunicationManager {
         return session!!
             .incoming
             .consumeAsFlow()
+            .onEach {
+                if (it is Frame.Close) {
+                    onConnectionClosed?.invoke()
+                }
+            }
             .filterIsInstance<Frame.Text>()
             .cancellable()
     }

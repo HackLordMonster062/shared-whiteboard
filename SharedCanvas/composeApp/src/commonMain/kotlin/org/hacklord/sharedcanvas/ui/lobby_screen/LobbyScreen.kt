@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.Flow
 import org.hacklord.sharedcanvas.ui.Route
 import org.hacklord.sharedcanvas.ui.UiEvent
 import org.hacklord.sharedcanvas.ui.lobby_screen.components.BoardListItem
+import org.hacklord.sharedcanvas.ui.lobby_screen.create_board_screen.CreateBoardPanel
+import org.hacklord.sharedcanvas.ui.lobby_screen.create_board_screen.CreateBoardState
 import org.jetbrains.compose.resources.painterResource
 import sharedcanvas.composeapp.generated.resources.AddBoard
 import sharedcanvas.composeapp.generated.resources.ExitIcon
@@ -31,6 +33,7 @@ import kotlin.math.min
 @Composable
 fun LobbyScreen(
     state: LobbyState,
+    createBoardState: CreateBoardState,
     onEvent: (event: LobbyEvent) -> Unit,
     onNavigate: (newRoute: Route) -> Unit,
     uiEventFlow: Flow<UiEvent>,
@@ -80,7 +83,7 @@ fun LobbyScreen(
                     interactionSource = interactionSource,
                     indication = null
                 ) {
-                    onNavigate(Route.Lobby.CreateBoard)
+                    onEvent(LobbyEvent.CreateWhiteboardToggle)
                 }
         )
     }
@@ -116,5 +119,15 @@ fun LobbyScreen(
                 }
             }
         }
+    }
+
+    if (createBoardState.isOpen) {
+        CreateBoardPanel(
+            createBoardState,
+            onEvent,
+            onNavigate,
+            Modifier
+                .fillMaxSize(.5f)
+        )
     }
 }

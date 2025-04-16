@@ -41,7 +41,7 @@ fun SignupScreen(
             when (result) {
                 is AuthResult.Authorized -> {
                     onEvent(AuthEvent.Connect)
-                    onNavigate(Route.Lobby.BoardList)
+                    onNavigate(Route.Lobby)
                 }
                 is AuthResult.Unauthorized -> {
                     // Show error

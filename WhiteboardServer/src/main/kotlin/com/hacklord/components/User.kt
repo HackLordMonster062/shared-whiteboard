@@ -8,6 +8,7 @@ import org.bson.types.ObjectId
 data class User(
     val name: String,
     val password: String,
+    val salt: String,
     @BsonId val id: String = ObjectId().toString(),
 )
 

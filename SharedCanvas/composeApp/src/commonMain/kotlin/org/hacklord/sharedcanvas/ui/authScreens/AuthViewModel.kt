@@ -44,6 +44,7 @@ class AuthViewModel(
                 _state = _state.copy(
                     password = event.newValue
                 )
+                print(event.newValue)
             }
             is AuthEvent.Login -> {
                 viewModelScope.launch {
@@ -81,6 +82,9 @@ class AuthViewModel(
                 viewModelScope.launch {
                     generalRepository.sendAuthenticate(token)
                 }
+            }
+            is AuthEvent.SwitchField -> {
+
             }
         }
     }

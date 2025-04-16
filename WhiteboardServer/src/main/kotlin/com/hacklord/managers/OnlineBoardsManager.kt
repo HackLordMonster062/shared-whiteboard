@@ -54,6 +54,7 @@ class OnlineBoardsManager(
         val board = onlineBoards[boardID] ?: openWhiteboard(boardID)
 
         if (board.getBoardInfo().creator == user.user.id || board.whitelist.contains(user.user.id)) {
+            println(onlineUsers)
             board.connectUser(onlineUsers[user.user.id]!!)
 
             return true
@@ -68,13 +69,20 @@ class OnlineBoardsManager(
         if (!manager.disconnectUser(userId)) return false
 
         if (manager.connectedUsers.isEmpty()) {
-            val content = manager.closeBoard()
+            manager.closeBoard()
+            val saved = saveBoard(boardID)
 
             onlineBoards.remove(boardID)
 
-            return boardsDataSource.updateWhiteboard(content)
+            return saved
         }
 
         return true
+    }
+
+    suspend fun saveBoard(boardID: String): Boolean {
+        val manager = onlineBoards[boardID] ?: return false
+
+        return boardsDataSource.updateWhiteboard(manager.getBoardInfo())
     }
 }

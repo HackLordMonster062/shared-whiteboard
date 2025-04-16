@@ -89,7 +89,7 @@ fun Route.connection(
                                         )
                                     }
 
-                                    response = LobbyResponse.BoardList(boards = boards)
+                                    response = LobbyResponse.BoardList(boards = dbBoards)
                                 }
 
                                 is LobbyRequest.EnterWhiteboard -> {
@@ -167,6 +167,7 @@ fun Route.connection(
                             when (request) {
                                 is WhiteboardRequest.DrawLine -> {
                                     manager.drawLine(request.line)
+                                    onlineBoardsManager.saveBoard(manager.id)
 
                                     manager.broadcast(
                                         onlineUser.user.id,
@@ -182,6 +183,7 @@ fun Route.connection(
                                     val success = manager.eraseLine(
                                         UUID.fromString(request.lineId)
                                     )
+                                    onlineBoardsManager.saveBoard(manager.id)
 
                                     if (success) {
                                         manager.broadcast(
@@ -218,17 +220,27 @@ fun Route.connection(
                                     }
                                 }
 
+                                is WhiteboardRequest.SearchUsers -> {
+                                    val users = userDataSource.getAllUsers(request.name)
+
+                                    response = WhiteboardResponse.GetAllUsers(
+                                        users
+                                    )
+                                }
+
                                 is WhiteboardRequest.AddUser -> {
-                                    val id = userDataSource.getUserByUsername(
-                                        request.username
+                                    val id = userDataSource.getUserById(
+                                        request.id
                                     )?.id
 
                                     if (id == null)
                                         response = WhiteboardResponse.Error(
                                             message = "Username not found."
                                         )
-                                    else
+                                    else {
                                         manager.addUser(id)
+                                        onlineBoardsManager.saveBoard(manager.id)
+                                    }
                                 }
 
                                 is WhiteboardRequest.RemoveUser -> {
@@ -260,6 +272,7 @@ fun Route.connection(
                 }
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             println("An error occurred: ${e.message}")
         } finally {
             when (val state = onlineUser.state) {

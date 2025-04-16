@@ -32,7 +32,10 @@ class WhiteboardViewModel(
         repository.getResponsesFlow().collect { response ->
             when (response) {
                 is WhiteboardResponse.ExitBoard -> {
-                    _uiEvent.send(UiEvent.Navigate(Route.Lobby.BoardList))
+                    _uiEvent.send(UiEvent.Navigate(Route.Lobby))
+                }
+                is WhiteboardResponse.GetAllUsers -> {
+                    _whiteboardState = _whiteboardState.copy(users = response.users)
                 }
                 is WhiteboardBroadcast.DrawBroadcast -> {
                     _whiteboardState.lines.add(response.line)
@@ -102,16 +105,20 @@ class WhiteboardViewModel(
             }
             is WhiteboardEvent.ChangeUsernameToAdd -> {
                 _whiteboardState = _whiteboardState.copy(currUsernameToAdd = event.newValue)
+
+                viewModelScope.launch {
+                    repository.sendRequest(WhiteboardRequest.SearchUsers(event.newValue))
+                }
             }
             is WhiteboardEvent.AddUser -> {
                 viewModelScope.launch {
-                    repository.sendRequest(WhiteboardRequest.AddUser(event.username))
+                    repository.sendRequest(WhiteboardRequest.AddUser(event.id))
                 }
             }
         }
     }
 
-    fun eraseLine(id: String) {
+    private fun eraseLine(id: String) {
         for (i in _whiteboardState.lines.indices) {
             if (_whiteboardState.lines[i].id == id) {
                 _whiteboardState.lines.removeAt(i)

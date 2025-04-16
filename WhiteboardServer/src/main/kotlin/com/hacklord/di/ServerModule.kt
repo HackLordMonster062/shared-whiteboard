@@ -2,6 +2,7 @@ package com.hacklord.di
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.hacklord.authentication.SHA256HashingService
 import com.hacklord.components.auth.JwtTokenService
 import com.hacklord.config.TokenConfig
 import com.hacklord.dataSources.UserDataSourceImpl
@@ -9,6 +10,7 @@ import com.hacklord.dataSources.WhiteboardDataSourceImpl
 import com.hacklord.interfaces.UserDataSource
 import com.hacklord.interfaces.WhiteboardDataSource
 import com.hacklord.managers.OnlineBoardsManager
+import com.hacklord.security.HashingService
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
@@ -36,6 +38,9 @@ val serverModule = module {
         OnlineBoardsManager(
             db
         )
+    }
+    single<HashingService> {
+        SHA256HashingService()
     }
 
     factory {

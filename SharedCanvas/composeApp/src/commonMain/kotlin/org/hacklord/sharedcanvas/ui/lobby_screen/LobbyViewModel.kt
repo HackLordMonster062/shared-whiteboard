@@ -23,7 +23,7 @@ class LobbyViewModel(
     private var _lobbyState by mutableStateOf(LobbyState())
     val lobbyState get() = _lobbyState
 
-    private var _createBoardState by mutableStateOf(CreateBoardState(""))
+    private var _createBoardState by mutableStateOf(CreateBoardState(false, ""))
     val createBoardState get() = _createBoardState
 
     private val _uiEvent = Channel<UiEvent>()
@@ -74,6 +74,9 @@ class LobbyViewModel(
                 viewModelScope.launch {
                     CommunicationManager.close()
                 }
+            }
+            is LobbyEvent.CreateWhiteboardToggle -> {
+                _createBoardState = _createBoardState.copy(isOpen = !_createBoardState.isOpen)
             }
             is LobbyEvent.WhiteboardNameChanged -> {
                 _createBoardState = _createBoardState.copy(name = event.newValue)

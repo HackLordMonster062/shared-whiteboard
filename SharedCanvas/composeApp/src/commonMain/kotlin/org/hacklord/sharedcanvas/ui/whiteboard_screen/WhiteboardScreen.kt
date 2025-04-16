@@ -5,26 +5,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.flow.Flow
 import org.hacklord.sharedcanvas.AppConstants
 import org.hacklord.sharedcanvas.ui.Route
 import org.hacklord.sharedcanvas.ui.UiEvent
-import org.hacklord.sharedcanvas.ui.authScreens.components.FormField
+import org.hacklord.sharedcanvas.ui.whiteboard_screen.components.AddUserPanel
 import org.hacklord.sharedcanvas.ui.whiteboard_screen.components.ColorItem
 import org.hacklord.sharedcanvas.ui.whiteboard_screen.components.DrawingCanvas
 import org.hacklord.sharedcanvas.ui.whiteboard_screen.components.EraserItem
@@ -144,33 +140,9 @@ fun WhiteboardScreen(
     }
 
     if (state.isAddUserMenuOpen) {
-        Dialog(onDismissRequest = { onEvent(WhiteboardEvent.ToggleAddUserMenu) }) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Add user")
-                Spacer(modifier = Modifier.height(8.dp))
-                FormField(
-                    value = state.currUsernameToAdd,
-                    onChange = { newValue ->
-                        onEvent(WhiteboardEvent.ChangeUsernameToAdd(newValue))
-                    },
-                    hint = "Username"
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = {
-                    onEvent(WhiteboardEvent.AddUser(state.currUsernameToAdd))
-                }) {
-                    Text("Add")
-                }
-                Button(onClick = {
-                    onEvent(WhiteboardEvent.ToggleAddUserMenu)
-                }) {
-                    Text("Close")
-                }
-            }
-        }
+        AddUserPanel(
+            state,
+            onEvent
+        )
     }
 }

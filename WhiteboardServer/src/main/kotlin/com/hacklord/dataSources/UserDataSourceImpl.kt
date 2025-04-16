@@ -5,6 +5,7 @@ import com.hacklord.interfaces.UserDataSource
 import org.bson.types.ObjectId
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
+import org.litote.kmongo.regex
 
 class UserDataSourceImpl(
     db: CoroutineDatabase
@@ -19,8 +20,8 @@ class UserDataSourceImpl(
         return users.findOne(User::id eq id)
     }
 
-    override suspend fun getAllUsers(): List<User> {
-        return users.find().toList()
+    override suspend fun getAllUsers(name: String): List<User> {
+        return users.find(User::name.regex(".*$name.*", "i")).toList()
     }
 
     override suspend fun insertUser(user: User): ObjectId? {

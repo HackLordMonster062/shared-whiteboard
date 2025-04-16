@@ -21,7 +21,7 @@ class WhiteboardManager(
     val id get() = info.id
 
     fun getBoardInfo(): Whiteboard {
-        return info.copy(lines = _lines.toList())
+        return info.copy(lines = _lines.toList(), userWhitelist = whitelist)
     }
 
     fun connectUser(user: OnlineUser) {

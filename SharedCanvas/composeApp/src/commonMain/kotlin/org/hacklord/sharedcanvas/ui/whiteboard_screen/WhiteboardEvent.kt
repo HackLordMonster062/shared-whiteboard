@@ -11,5 +11,5 @@ sealed interface WhiteboardEvent {
     data class SetWidth(val width: Int) : WhiteboardEvent
     data object ToggleAddUserMenu : WhiteboardEvent
     data class ChangeUsernameToAdd(val newValue: String): WhiteboardEvent
-    data class AddUser(val username: String): WhiteboardEvent
+    data class AddUser(val id: String): WhiteboardEvent
 }

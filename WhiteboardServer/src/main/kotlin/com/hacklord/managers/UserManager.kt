@@ -10,6 +10,8 @@ object UserManager {
     val onlineUsers = ConcurrentHashMap<String, OnlineUser>()
 
     fun connectUser(user: User, session: WebSocketSession): OnlineUser {
+        if (onlineUsers.containsKey(user.id)) throw RuntimeException("User already connected")
+
         val onlineUser = OnlineUser(
             user,
             OnlineUserState.InLobby,

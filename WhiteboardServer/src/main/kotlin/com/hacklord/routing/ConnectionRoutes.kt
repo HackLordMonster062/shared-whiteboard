@@ -3,6 +3,7 @@ package com.hacklord.routing
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.hacklord.components.OnlineUserState
+import com.hacklord.components.User
 import com.hacklord.components.Whiteboard
 import com.hacklord.interfaces.UserDataSource
 import com.hacklord.interfaces.WhiteboardDataSource
@@ -50,7 +51,7 @@ fun Route.connection(
             return@webSocket
         }
 
-        val user = userDataSource.getUserById(userId) ?: kotlin.run {
+        val userEntity = userDataSource.getUserById(userId) ?: kotlin.run {
             send(
                 Frame.Text(
                     "User not found"
@@ -58,6 +59,8 @@ fun Route.connection(
             )
             return@webSocket
         }
+
+        val user = User(userEntity.id, userEntity.name)
 
         var onlineUser = UserManager.connectUser(user, this)
 
@@ -221,7 +224,9 @@ fun Route.connection(
                                 }
 
                                 is WhiteboardRequest.SearchUsers -> {
-                                    val users = userDataSource.getAllUsers(request.name)
+                                    val users = userDataSource.getAllUsers(request.name).map { entity ->
+                                        User(entity.id, entity.name)
+                                    }
 
                                     response = WhiteboardResponse.GetAllUsers(
                                         users

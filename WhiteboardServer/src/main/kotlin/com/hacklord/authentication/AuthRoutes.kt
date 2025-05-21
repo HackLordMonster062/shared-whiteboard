@@ -1,6 +1,6 @@
 package com.hacklord.authentication
 
-import com.hacklord.components.User
+import com.hacklord.components.UserEntity
 import com.hacklord.components.auth.AuthRequest
 import com.hacklord.components.auth.AuthResponse
 import com.hacklord.components.auth.JwtTokenService
@@ -36,7 +36,7 @@ fun Route.signup(
 
         val saltedHash = hashingService.generateSaltedHash(request.password)
 
-        val user = User(
+        val user = UserEntity(
             request.username,
             saltedHash.hash,
             saltedHash.salt

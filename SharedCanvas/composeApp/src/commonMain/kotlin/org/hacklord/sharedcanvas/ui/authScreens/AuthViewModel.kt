@@ -37,12 +37,12 @@ class AuthViewModel(
         when (event) {
             is AuthEvent.UsernameChanged -> {
                 _state = _state.copy(
-                    username = event.newValue
+                    username = filterString(event.newValue, 15)
                 )
             }
             is AuthEvent.PasswordChanged -> {
                 _state = _state.copy(
-                    password = event.newValue
+                    password = filterString(event.newValue, 15)
                 )
                 print(event.newValue)
             }
@@ -87,6 +87,11 @@ class AuthViewModel(
 
             }
         }
+    }
+
+    private fun filterString(value: String, maxLength: Int): String {
+        val regex = Regex("[^a-zA-Z0-9&%#\$|()\\[\\]{}@!,.?:;^_+=\\-*/\\\\ ]")
+        return value.replace(regex, "").take(maxLength)
     }
 
     private fun authenticate() {
